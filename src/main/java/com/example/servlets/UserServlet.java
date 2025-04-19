@@ -2,9 +2,8 @@ package com.example.servlets;
 
 import com.example.config.JpaUtil;
 import com.example.dao.UserDAO;
-import com.example.entities.User;
+import com.example.entities.APP_USERS;
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 import jakarta.persistence.EntityManager;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -17,49 +16,49 @@ import java.util.List;
 
 @WebServlet("/users")
 public class UserServlet extends HttpServlet {
-    private final Gson gson = new Gson(); // Objet pour gérer JSON
+    private final Gson gson = new Gson();
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         EntityManager em = JpaUtil.getEntityManager();
-        UserDAO userDAO = new UserDAO(em);
-        List<User> users = userDAO.getAllUsers();
-        em.close();
+        try {
+            UserDAO dao = new UserDAO(em);
+            List<APP_USERS> users = dao.getAllUsers();
 
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(gson.toJson(users)); // Convertit la liste en JSON et l'envoie
+            resp.setContentType("application/json");
+            resp.getWriter().write(gson.toJson(users));
+        } finally {
+            JpaUtil.closeEntityManager(em);
+        }
     }
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        EntityManager em = JpaUtil.getEntityManager();
         try {
-            // Lire le JSON envoyé
-            BufferedReader reader = request.getReader();
-            User user = gson.fromJson(reader, User.class);
+            BufferedReader reader = req.getReader();
+            APP_USERS user = gson.fromJson(reader, APP_USERS.class);
 
-            // Vérifier si les champs requis sont présents
             if (user.getName() == null || user.getEmail() == null) {
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                response.getWriter().println("{\"error\": \"Nom et email requis !\"}");
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                resp.getWriter().write("{\"error\":\"Name and email are required\"}");
                 return;
             }
 
-            // Ajouter l'utilisateur dans la base
-            EntityManager em = JpaUtil.getEntityManager();
-            em.getTransaction().begin();
-            em.persist(user);
-            em.getTransaction().commit();
-            em.close();
+            JpaUtil.beginTransaction(em);
+            new UserDAO(em).addUser(user);
+            JpaUtil.commitTransaction(em);
 
-            // Réponse JSON
-            response.setStatus(HttpServletResponse.SC_CREATED);
-            response.setContentType("application/json");
-            response.getWriter().println("{\"message\": \"Utilisateur ajouté avec succès !\"}");
-
-        } catch (JsonSyntaxException e) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().println("{\"error\": \"Format JSON invalide !\"}");
+            resp.setStatus(HttpServletResponse.SC_CREATED);
+            resp.setContentType("application/json");
+            resp.getWriter().write("{\"message\":\"User created successfully\"}");
+        } catch (Exception e) {
+            JpaUtil.rollbackTransaction(em);
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            resp.getWriter().write("{\"error\":\"" + e.getMessage() + "\"}");
+            e.printStackTrace();
+        } finally {
+            JpaUtil.closeEntityManager(em);
         }
     }
 }

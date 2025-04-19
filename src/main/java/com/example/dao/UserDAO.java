@@ -1,30 +1,36 @@
 package com.example.dao;
 
-import com.example.entities.User;
+import com.example.entities.APP_USERS;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityTransaction;
 import java.util.List;
 
 public class UserDAO {
-    private EntityManager entityManager;
+    private final EntityManager entityManager;
 
     public UserDAO(EntityManager entityManager) {
         this.entityManager = entityManager;
     }
 
-    public void saveUser(User user) {
-        EntityTransaction transaction = entityManager.getTransaction();
-        try {
-            transaction.begin();
-            entityManager.persist(user);
-            transaction.commit();
-        } catch (Exception e) {
-            transaction.rollback();
-            e.printStackTrace();
-        }
+    public void addUser(APP_USERS user) {
+        entityManager.persist(user);
     }
 
-    public List<User> getAllUsers() {
-        return entityManager.createQuery("SELECT u FROM User u", User.class).getResultList();
+    public APP_USERS getUserById(Long id) {
+        return entityManager.find(APP_USERS.class, id);
+    }
+
+    public List<APP_USERS> getAllUsers() {
+        return entityManager.createQuery("SELECT u FROM APP_USERS u", APP_USERS.class).getResultList();
+    }
+
+    public void updateUser(APP_USERS user) {
+        entityManager.merge(user);
+    }
+
+    public void deleteUser(Long id) {
+        APP_USERS user = getUserById(id);
+        if (user != null) {
+            entityManager.remove(user);
+        }
     }
 }

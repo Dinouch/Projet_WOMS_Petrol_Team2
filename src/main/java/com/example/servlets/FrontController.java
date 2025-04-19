@@ -2,8 +2,7 @@ package com.example.servlets;
 
 import com.example.config.JpaUtil;
 import com.example.dao.UserDAO;
-import com.example.entities.User;
-import com.google.gson.Gson;
+import com.example.entities.APP_USERS;
 import jakarta.persistence.EntityManager;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -15,34 +14,54 @@ import java.util.List;
 
 @WebServlet(urlPatterns = {"", "/", "/listusers"})
 public class FrontController extends HttpServlet {
+
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String uri = request.getRequestURI();
-        String contextPath = request.getContextPath();
-        String pathInfo = request.getPathInfo();
+
         String servletPath = request.getServletPath();
 
-        System.out.println("URI: " + uri);
-        System.out.println("ContextPath: " + contextPath);
-        System.out.println("PathInfo: " + pathInfo);
+        // Debug des URLs
         System.out.println("ServletPath: " + servletPath);
 
-        // Si l'URL est /petrol ou /petrol/ (racine du contexte)
         if (servletPath.equals("") || servletPath.equals("/")) {
+            // Page d'accueil
             request.getRequestDispatcher("/index.jsp").forward(request, response);
         }
-        // Si l'URL est /petrol/test
         else if (servletPath.equals("/listusers")) {
-            EntityManager em = JpaUtil.getEntityManager();
-            UserDAO userDAO = new UserDAO(em);
-            List<User> users = userDAO.getAllUsers();
-            em.close();
-
-            // Passer les utilisateurs à la page JSP
-            request.setAttribute("users", users);
-            request.getRequestDispatcher("/testuser.jsp").forward(request, response);
+            // Gestion des utilisateurs
+            handleListUsers(request, response);
         } else {
             response.sendError(HttpServletResponse.SC_NOT_FOUND, "Page non trouvée");
+        }
+    }
+
+    private void handleListUsers(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        EntityManager em = null;
+        try {
+            em = JpaUtil.getEntityManager();
+            UserDAO userDAO = new UserDAO(em);
+
+            // Récupération des utilisateurs
+            List<APP_USERS> users = userDAO.getAllUsers();
+
+            // Debug
+            System.out.println("[DEBUG] Nombre d'utilisateurs: " + users.size());
+
+            // Passage à la JSP
+            request.setAttribute("users", users);
+            request.getRequestDispatcher("/testuser.jsp").forward(request, response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    "Erreur serveur: " + e.getMessage());
+        } finally {
+            if (em != null) {
+                JpaUtil.closeEntityManager(em);
+            }
         }
     }
 }

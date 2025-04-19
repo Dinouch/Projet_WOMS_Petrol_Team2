@@ -3,8 +3,23 @@
   <component name="RemoteRepositoriesConfiguration">
     <remote-repository>
       <option name="id" value="central" />
+      <option name="name" value="central" />
+      <option name="url" value="https://repo.maven.apache.org/maven2" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="central" />
       <option name="name" value="Central Repository" />
       <option name="url" value="https://repo.maven.apache.org/maven2" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="jboss-public-repository-group" />
+      <option name="name" value="jboss-public-repository-group" />
+      <option name="url" value="https://repository.jboss.org/nexus/content/groups/public/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="eclipse-repo" />
+      <option name="name" value="eclipse-repo" />
+      <option name="url" value="https://repo.eclipse.org/content/repositories/releases/" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="central" />
@@ -15,6 +30,11 @@
       <option name="id" value="jboss.community" />
       <option name="name" value="JBoss Community repository" />
       <option name="url" value="https://repository.jboss.org/nexus/content/repositories/public/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="jakarta-repo" />
+      <option name="name" value="jakarta-repo" />
+      <option name="url" value="https://repository.eclipse.org/content/repositories/jakarta-releases/" />
     </remote-repository>
   </component>
 </project>

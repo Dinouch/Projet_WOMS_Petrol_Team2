@@ -1,27 +1,50 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="java.util.List" %>
-<%@ page import="com.example.entities.User" %>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page import="com.example.entities.APP_USERS"%>
+<%@page import="java.util.List"%>
+<!DOCTYPE html>
 <html>
 <head>
-    <title>Test - Liste des utilisateurs</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Liste des Utilisateurs</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { color: #333; }
+        ul { list-style-type: none; padding: 0; }
+        li { padding: 8px; margin: 5px 0; background: #f5f5f5; border-radius: 4px; }
+        .error { color: red; }
+    </style>
 </head>
 <body>
-    <h1>Liste des utilisateurs</h1>
-    <ul>
-        <%
-            List<User> users = (List<User>) request.getAttribute("users");
-            if (users != null) {
-                for (User user : users) {
-        %>
-                    <li><%= user.getName() %> - <%= user.getEmail() %></li>
-        <%
-                }
+    <h1>Liste des Utilisateurs</h1>
+
+    <%
+        // Récupération de la liste avec vérification de type
+        Object usersObj = request.getAttribute("users");
+        if (usersObj instanceof List) {
+            List<?> users = (List<?>) usersObj;
+            if (!users.isEmpty() && users.get(0) instanceof APP_USERS) {
+    %>
+                <ul>
+                    <% for (APP_USERS user : (List<APP_USERS>) users) { %>
+                        <li>
+                            <%= user.getName() %>
+                            (<%= user.getEmail() %>)
+                        </li>
+                    <% } %>
+                </ul>
+    <%
             } else {
-        %>
-                <li>Aucun utilisateur trouvé.</li>
-        <%
+    %>
+                <p class="error">Aucun utilisateur trouvé ou format invalide</p>
+    <%
             }
-        %>
-    </ul>
+        } else {
+    %>
+            <p class="error">Erreur: Données utilisateurs non disponibles</p>
+    <%
+        }
+    %>
+
+    <p><a href="${pageContext.request.contextPath}/">Retour à l'accueil</a></p>
 </body>
 </html>
