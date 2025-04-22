@@ -1,0 +1,12 @@
+# Build stage (avec Maven 3.9.9)
+FROM maven:3.9.9-jdk-20 AS build
+WORKDIR /usr/src/app
+COPY pom.xml .
+COPY src ./src
+RUN mvn clean package -DskipTests
+
+# Runtime stage (avec TomEE 10.0.1)
+FROM tomee:10.0.1-jdk20-webprofile  # Image custom basée sur votre version
+COPY --from=build /usr/src/app/target/test_j2ee.war /usr/local/tomee/webapps/ROOT.war
+COPY docker/oracle/ojdbc8.jar /usr/local/tomee/lib/
+COPY docker/tomee/conf/ /usr/local/tomee/conf/  # Fichiers de config perso

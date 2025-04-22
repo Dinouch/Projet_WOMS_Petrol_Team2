@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  oracle-db:
+    build: ./docker/oracle
+    ports:
+      - "1521:1521"
+    environment:
+      - ORACLE_PWD=prism2companyIT
+      - ORACLE_USER=PRISM
+    volumes:
+      - oracle_data:/opt/oracle/oradata
+
+  tomee:
+    build: .
+    ports:
+      - "8090:8080"
+    environment:
+      - JAVA_HOME=/usr/local/openjdk-20  # JDK 20 comme votre config
+      - MAVEN_HOME=/usr/share/maven
+    volumes:
+      - ./src:/usr/src/app/src
+      - ./src/main/webapp:/usr/local/tomee/webapps/ROOT
+      - ~/.m2:/root/.m2
+    depends_on:
+      oracle-db:
+        condition: service_healthy
+    command: ["/usr/local/tomee/bin/startup.sh"]  # Simule votre workflow manuel
+
+volumes:
+  oracle_data:
