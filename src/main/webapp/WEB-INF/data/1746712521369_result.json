@@ -1,0 +1,818 @@
+{
+  "mud_information": {
+    "LOSSES": {"SCE_LOSSES": 38},
+    "CENTRIFUGE_SERVICE": {
+      "NUMBER": null,
+      "HOURS": null,
+      "MODEL": "Hours",
+      "BRAND": 11
+    },
+    "STATUS": {
+      "LOST_CIRC": "Active",
+      "TRIPPING": "Lost",
+      "ENCAPSULATION": "MF:",
+      "SHAKERS": "Lost"
+    },
+    "VOLUMES_BBL": {
+      "AVAILABLE": 432,
+      "KILL_MUD": null,
+      "RESERVE": 724,
+      "ACTIVE": 580
+    },
+    "MUD_PROPERTIES": {
+      "GEL_10_MIN": 16,
+      "GEL_10_SEC": 13,
+      "CACL2": 223,
+      "PV": 9,
+      "F_API": 6.5,
+      "MBT_PPB": 12.5,
+      "LGS_PERCENT": 2.53,
+      "APP_VIS": null,
+      "CL_G_L": 21,
+      "E_LIME": 34,
+      "MF": 0.35,
+      "WATER_PERCENT": 96,
+      "WEIGHT": 8.9,
+      "HGS_PERCENT": null,
+      "F_HPHT": null,
+      "CAKE": 1,
+      "MUD_TYPE": "NC",
+      "SOLIDS_PERCENT": 2,
+      "SAND_PERCENT": null,
+      "FUNNEL": 45,
+      "PF": 0.2,
+      "KCL_PERCENT": 4,
+      "PH": 10.5,
+      "NACL": 0,
+      "Y_POINT": 22,
+      "CA_PLUS_PLUS": 100
+    },
+    "MUD_CLEANER_SERVICE": "Hours",
+    "PITS": {
+      "BEHIND_CSG": "Reserve",
+      "OTHER_HOLE": "Kill",
+      "DUMPED": null,
+      "LOST_SURF": "Dumped:",
+      "LOST_HOLE": "Hole"
+    }
+  },
+  "operations": {"operations": [
+    {
+      "start_time": "00:00",
+      "initial_depth": "2002",
+      "code": "DESP",
+      "rate": "T1",
+      "end_time": "01:30",
+      "description": "",
+      "company": "ENTP",
+      "final_depth": ""
+    },
+    {
+      "start_time": "01:30",
+      "initial_depth": "",
+      "code": "TBOP",
+      "rate": "T2",
+      "end_time": "03:00",
+      "description": "",
+      "company": "ENTP",
+      "final_depth": ""
+    },
+    {
+      "start_time": "03:00",
+      "initial_depth": "",
+      "code": "GERB",
+      "rate": "T1",
+      "end_time": "06:00",
+      "description": "",
+      "company": "ENTP",
+      "final_depth": ""
+    },
+    {
+      "start_time": "06:00",
+      "initial_depth": "",
+      "code": "DGERB",
+      "rate": "T1",
+      "end_time": "07:00",
+      "description": "",
+      "company": "ENTP",
+      "final_depth": ""
+    },
+    {
+      "start_time": "07:00",
+      "initial_depth": "00",
+      "code": "DGDC",
+      "rate": "T1",
+      "end_time": "13:00",
+      "description": "",
+      "company": "ENTP",
+      "final_depth": "2661"
+    },
+    {
+      "start_time": "13:00",
+      "initial_depth": "2661",
+      "code": "REFOR",
+      "rate": "T1",
+      "end_time": "14:15",
+      "description": "",
+      "company": "ENTP",
+      "final_depth": "2750"
+    },
+    {
+      "start_time": "14:15",
+      "initial_depth": "2750",
+      "code": "FOR",
+      "rate": "T1",
+      "end_time": "24:00",
+      "description": "",
+      "company": "ENTP",
+      "final_depth": "2839"
+    },
+    {
+      "start_time": "",
+      "initial_depth": "",
+      "code": "",
+      "rate": "",
+      "end_time": "",
+      "description": "",
+      "company": "",
+      "final_depth": ""
+    },
+    {
+      "start_time": "",
+      "initial_depth": "",
+      "code": "",
+      "rate": "",
+      "end_time": "",
+      "description": "",
+      "company": "",
+      "final_depth": ""
+    },
+    {
+      "start_time": "",
+      "initial_depth": "",
+      "code": "",
+      "rate": "",
+      "end_time": "",
+      "description": "",
+      "company": "",
+      "final_depth": ""
+    },
+    {
+      "start_time": "",
+      "initial_depth": "",
+      "code": "",
+      "rate": "",
+      "end_time": "",
+      "description": "",
+      "company": "",
+      "final_depth": ""
+    },
+    {
+      "start_time": "",
+      "initial_depth": "",
+      "code": "",
+      "rate": "",
+      "end_time": "",
+      "description": "",
+      "company": "",
+      "final_depth": ""
+    },
+    {
+      "start_time": "09:30",
+      "initial_depth": "",
+      "code": "",
+      "rate": "",
+      "end_time": "",
+      "description": "",
+      "company": "",
+      "final_depth": ""
+    },
+    {
+      "start_time": "",
+      "initial_depth": "",
+      "code": "",
+      "rate": "",
+      "end_time": "",
+      "description": "",
+      "company": "",
+      "final_depth": ""
+    },
+    {
+      "start_time": "",
+      "initial_depth": "",
+      "code": "",
+      "rate": "",
+      "end_time": "",
+      "description": "",
+      "company": "",
+      "final_depth": ""
+    },
+    {
+      "start_time": "",
+      "initial_depth": "",
+      "code": "",
+      "rate": "",
+      "end_time": "",
+      "description": "AFTER MIDNIGHT",
+      "company": "",
+      "final_depth": ""
+    },
+    {
+      "start_time": "00:00",
+      "initial_depth": "",
+      "code": "",
+      "rate": "",
+      "end_time": "06:00",
+      "description": "",
+      "company": "",
+      "final_depth": ""
+    },
+    {
+      "start_time": "",
+      "initial_depth": "",
+      "code": "",
+      "rate": "",
+      "end_time": "",
+      "description": "",
+      "company": "",
+      "final_depth": ""
+    },
+    {
+      "start_time": "",
+      "initial_depth": "",
+      "code": "",
+      "rate": "",
+      "end_time": "",
+      "description": "",
+      "company": "",
+      "final_depth": ""
+    },
+    {
+      "start_time": "",
+      "initial_depth": "",
+      "code": "",
+      "rate": "",
+      "end_time": "",
+      "description": "",
+      "company": "",
+      "final_depth": ""
+    },
+    {
+      "start_time": "",
+      "initial_depth": "",
+      "code": "",
+      "rate": "",
+      "end_time": "",
+      "description": "",
+      "company": "",
+      "final_depth": ""
+    },
+    {
+      "start_time": "",
+      "initial_depth": "",
+      "code": "",
+      "rate": "",
+      "end_time": "",
+      "description": "",
+      "company": "",
+      "final_depth": ""
+    },
+    {
+      "start_time": "",
+      "initial_depth": "",
+      "code": "",
+      "rate": "",
+      "end_time": "",
+      "description": "",
+      "company": "",
+      "final_depth": ""
+    },
+    {
+      "start_time": "",
+      "initial_depth": "",
+      "code": "",
+      "rate": "",
+      "end_time": "",
+      "description": "",
+      "company": "",
+      "final_depth": ""
+    },
+    {
+      "start_time": "",
+      "initial_depth": "",
+      "code": "",
+      "rate": "",
+      "end_time": "",
+      "description": "",
+      "company": "",
+      "final_depth": ""
+    },
+    {
+      "start_time": "",
+      "initial_depth": "",
+      "code": "",
+      "rate": "",
+      "end_time": "",
+      "description": "",
+      "company": "",
+      "final_depth": ""
+    },
+    {
+      "start_time": "",
+      "initial_depth": "",
+      "code": "",
+      "rate": "",
+      "end_time": "",
+      "description": "",
+      "company": "",
+      "final_depth": ""
+    },
+    {
+      "start_time": "",
+      "initial_depth": "",
+      "code": "",
+      "rate": "",
+      "end_time": "",
+      "description": "",
+      "company": "",
+      "final_depth": ""
+    },
+    {
+      "start_time": "",
+      "initial_depth": "",
+      "code": "",
+      "rate": "",
+      "end_time": "",
+      "description": "",
+      "company": "",
+      "final_depth": ""
+    },
+    {
+      "start_time": "",
+      "initial_depth": "",
+      "code": "",
+      "rate": "",
+      "end_time": "",
+      "description": "",
+      "company": "",
+      "final_depth": ""
+    },
+    {
+      "start_time": "",
+      "initial_depth": "",
+      "code": "",
+      "rate": "",
+      "end_time": "",
+      "description": "",
+      "company": "",
+      "final_depth": ""
+    },
+    {
+      "start_time": "",
+      "initial_depth": "",
+      "code": "",
+      "rate": "",
+      "end_time": "",
+      "description": "",
+      "company": "",
+      "final_depth": ""
+    },
+    {
+      "start_time": "",
+      "initial_depth": "",
+      "code": "",
+      "rate": "",
+      "end_time": "",
+      "description": "",
+      "company": "",
+      "final_depth": ""
+    },
+    {
+      "start_time": "",
+      "initial_depth": "",
+      "code": "",
+      "rate": "",
+      "end_time": "",
+      "description": "",
+      "company": "",
+      "final_depth": ""
+    },
+    {
+      "start_time": "",
+      "initial_depth": "",
+      "code": "",
+      "rate": "",
+      "end_time": "",
+      "description": "",
+      "company": "",
+      "final_depth": ""
+    },
+    {
+      "start_time": "",
+      "initial_depth": "",
+      "code": "",
+      "rate": "",
+      "end_time": "",
+      "description": "",
+      "company": "",
+      "final_depth": ""
+    },
+    {
+      "start_time": "",
+      "initial_depth": "",
+      "code": "",
+      "rate": "",
+      "end_time": "",
+      "description": "",
+      "company": "",
+      "final_depth": ""
+    },
+    {
+      "start_time": "",
+      "initial_depth": "",
+      "code": "",
+      "rate": "",
+      "end_time": "",
+      "description": "",
+      "company": "",
+      "final_depth": ""
+    },
+    {
+      "start_time": "",
+      "initial_depth": "",
+      "code": "",
+      "rate": "",
+      "end_time": "",
+      "description": "",
+      "company": "",
+      "final_depth": ""
+    },
+    {
+      "start_time": "",
+      "initial_depth": "",
+      "code": "",
+      "rate": "",
+      "end_time": "",
+      "description": "",
+      "company": "",
+      "final_depth": ""
+    },
+    {
+      "start_time": "",
+      "initial_depth": "",
+      "code": "",
+      "rate": "",
+      "end_time": "",
+      "description": "",
+      "company": "",
+      "final_depth": ""
+    }
+  ]},
+  "lithology": [
+    {
+      "from_ft": "692",
+      "to_ft": "81",
+      "stage": "GIOSH",
+      "woc": "31.64",
+      "total_interval_ft": "",
+      "wc": "20.01"
+    },
+    {
+      "from_ft": "773",
+      "to_ft": "612",
+      "stage": "ABREGHS",
+      "woc": "31.6",
+      "total_interval_ft": "",
+      "wc": "26.6"
+    },
+    {
+      "from_ft": "1385",
+      "to_ft": "543",
+      "stage": "RAS HAMIA",
+      "woc": "32",
+      "total_interval_ft": "",
+      "wc": "22"
+    },
+    {
+      "from_ft": "1928",
+      "to_ft": "717",
+      "stage": "TEGUENTOURINE",
+      "woc": "25",
+      "total_interval_ft": "",
+      "wc": "20"
+    }
+  ],
+  "global_info": {
+    "cost_metrics": {
+      "cumulative_cost": "",
+      "daily_cost": 76291.675
+    },
+    "safety_metrics": {
+      "last_bop_test": "22",
+      "accident_free_days": 508,
+      "actual_day": 13,
+      "last_safety_meeting": "10/01/2013",
+      "planned_day": "04"
+    },
+    "personnel": {
+      "superintendent": {
+        "name": "Latreche",
+        "id": "13"
+      },
+      "drilling_engineer": {
+        "name": "A.ALTUMI",
+        "id": "11"
+      },
+      "geologist": [
+        {
+          "name": "Azouz",
+          "id": "17"
+        },
+        {
+          "name": "Daw",
+          "id": "11"
+        }
+      ]
+    }
+  },
+  "header": {
+    "progress_hours": "9.75",
+    "progress_ft": "89",
+    "casing_top_at_ft": null,
+    "report_number": "18",
+    "tvd_ft": "2839",
+    "last_casing": "/             13\"3/8    61# J55 BTC",
+    "well_name": "A",
+    "casing_at_ft": "2746",
+    "report_date": "10/01/2013",
+    "depth_24h_ft": "2839"
+  },
+  "parameters": {
+    "pressure_psi": 1200,
+    "progress_hours": 9.75,
+    "rpm_max": 120,
+    "hsi_hp_sqin": 0.56,
+    "deviation_azimuth": 9,
+    "bit_type": "VTD716DGXU",
+    "tfa_sqin": 0.91,
+    "bit_serial": 6010815,
+    "flow_gpm": 600,
+    "wob_min_t": 5,
+    "rpm_min": 90,
+    "progress_ft": 89,
+    "cumulative_ft": 89,
+    "deviation_depth_ft": 2740,
+    "deviation_inclination": "1˚",
+    "bit_size": "12\"1/4",
+    "deviation_tvd_ft": 3,
+    "bit_number": 3,
+    "wob_max_t": 7,
+    "nozzles": [
+      "13",
+      "13",
+      "13",
+      "13",
+      "13",
+      "13",
+      "13"
+    ],
+    "cumulative_hours": 9.75
+  },
+  "mud_products": {
+    "downhole_equipment": [
+      {
+        "SERIAL": "1762-5051",
+        "Equipment": "Jar",
+        "HOURS": "116"
+      },
+      {
+        "SERIAL": "",
+        "Equipment": "Monel",
+        "HOURS": ""
+      },
+      {
+        "SERIAL": "",
+        "Equipment": "Shock Tool",
+        "HOURS": ""
+      }
+    ],
+    "total_length": "743.40",
+    "bha_components": [
+      {
+        "Item": "BIT",
+        "BHA_N°": "6",
+        "OD_in": "12.25",
+        "Jts": "1",
+        "Len_ft": "1.25",
+        "ID_in": ""
+      },
+      {
+        "Item": "N/BIT",
+        "BHA_N°": "6",
+        "OD_in": "12.187",
+        "Jts": "1",
+        "Len_ft": "6.36",
+        "ID_in": "2.812"
+      },
+      {
+        "Item": "S/DC",
+        "BHA_N°": "6",
+        "OD_in": "8",
+        "Jts": "1",
+        "Len_ft": "10.30",
+        "ID_in": "2.812"
+      },
+      {
+        "Item": "STB",
+        "BHA_N°": "6",
+        "OD_in": "12.187",
+        "Jts": "1",
+        "Len_ft": "6.04",
+        "ID_in": "2.812"
+      },
+      {
+        "Item": "DC",
+        "BHA_N°": "6",
+        "OD_in": "8",
+        "Jts": "1",
+        "Len_ft": "30.93",
+        "ID_in": "2.812"
+      },
+      {
+        "Item": "STB",
+        "BHA_N°": "6",
+        "OD_in": "12.187",
+        "Jts": "1",
+        "Len_ft": "6.36",
+        "ID_in": "2.812"
+      },
+      {
+        "Item": "DC",
+        "BHA_N°": "6",
+        "OD_in": "8",
+        "Jts": "13",
+        "Len_ft": "399.31",
+        "ID_in": "2.812"
+      },
+      {
+        "Item": "DJ",
+        "BHA_N°": "6",
+        "OD_in": "8",
+        "Jts": "1",
+        "Len_ft": "31.82",
+        "ID_in": "2.812"
+      },
+      {
+        "Item": "DC",
+        "BHA_N°": "6",
+        "OD_in": "8",
+        "Jts": "2",
+        "Len_ft": "61.94",
+        "ID_in": "2.812"
+      },
+      {
+        "Item": "XO",
+        "BHA_N°": "6",
+        "OD_in": "8",
+        "Jts": "1",
+        "Len_ft": "3.77",
+        "ID_in": "2.812"
+      },
+      {
+        "Item": "HW/DP",
+        "BHA_N°": "6",
+        "OD_in": "5",
+        "Jts": "6",
+        "Len_ft": "185.32",
+        "ID_in": "3"
+      }
+    ]
+  },
+  "bha_components": {
+    "downhole_equipment": [
+      {
+        "SERIAL": "1762-5051",
+        "Equipment": "Jar",
+        "HOURS": "116"
+      },
+      {
+        "SERIAL": "",
+        "Equipment": "Monel",
+        "HOURS": ""
+      },
+      {
+        "SERIAL": "",
+        "Equipment": "Shock Tool",
+        "HOURS": ""
+      }
+    ],
+    "total_length": "743.40",
+    "bha_components": [
+      {
+        "Item": "BIT",
+        "BHA_N°": "6",
+        "OD_in": "12.25",
+        "Jts": "1",
+        "Len_ft": "1.25",
+        "ID_in": ""
+      },
+      {
+        "Item": "N/BIT",
+        "BHA_N°": "6",
+        "OD_in": "12.187",
+        "Jts": "1",
+        "Len_ft": "6.36",
+        "ID_in": "2.812"
+      },
+      {
+        "Item": "S/DC",
+        "BHA_N°": "6",
+        "OD_in": "8",
+        "Jts": "1",
+        "Len_ft": "10.30",
+        "ID_in": "2.812"
+      },
+      {
+        "Item": "STB",
+        "BHA_N°": "6",
+        "OD_in": "12.187",
+        "Jts": "1",
+        "Len_ft": "6.04",
+        "ID_in": "2.812"
+      },
+      {
+        "Item": "DC",
+        "BHA_N°": "6",
+        "OD_in": "8",
+        "Jts": "1",
+        "Len_ft": "30.93",
+        "ID_in": "2.812"
+      },
+      {
+        "Item": "STB",
+        "BHA_N°": "6",
+        "OD_in": "12.187",
+        "Jts": "1",
+        "Len_ft": "6.36",
+        "ID_in": "2.812"
+      },
+      {
+        "Item": "DC",
+        "BHA_N°": "6",
+        "OD_in": "8",
+        "Jts": "13",
+        "Len_ft": "399.31",
+        "ID_in": "2.812"
+      },
+      {
+        "Item": "DJ",
+        "BHA_N°": "6",
+        "OD_in": "8",
+        "Jts": "1",
+        "Len_ft": "31.82",
+        "ID_in": "2.812"
+      },
+      {
+        "Item": "DC",
+        "BHA_N°": "6",
+        "OD_in": "8",
+        "Jts": "2",
+        "Len_ft": "61.94",
+        "ID_in": "2.812"
+      },
+      {
+        "Item": "XO",
+        "BHA_N°": "6",
+        "OD_in": "8",
+        "Jts": "1",
+        "Len_ft": "3.77",
+        "ID_in": "2.812"
+      },
+      {
+        "Item": "HW/DP",
+        "BHA_N°": "6",
+        "OD_in": "5",
+        "Jts": "6",
+        "Len_ft": "185.32",
+        "ID_in": "3"
+      }
+    ]
+  },
+  "remarks": {
+    "requirements": [
+      "Need: 1/ Casing Head Housing Cost.",
+      "2/ Booking for A.ALTUMI  from WAFA to TRIPOLI on Saturday  October/ 05 /2013 and FARAJ f/ TRIPOLI",
+      "t/ WAFA for the same day."
+    ],
+    "remarks": {
+      "remarks": [
+        "DRILLING WITH TOP DRIVE",
+        "Daily NPT =  hrs / Cumulative NPT = 0.24 days",
+        "NPT distribution : ENTP (5.75hrs) / Hole problems(hrs) / HALLIBURTON (hrs)/SLB(hrs)",
+        "Geology:  2750' - 2839'  limestone - Stage: Dembaba   @  2645'",
+        "NOTE: the bit  N3  used in B1-95/02 has drilled 3001 ft in 85.75 hr"
+      ],
+      "Planned_operation": "DRILLING 12''1/4 SECTION"
+    }
+  }
+}

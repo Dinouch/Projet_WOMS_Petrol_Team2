@@ -4,7 +4,7 @@
              xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence
              https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd"
              version="3.0">
-    <persistence-unit name="myPU" transaction-type="RESOURCE_LOCAL">
+    <persistence-unit name="myPU" transaction-type="JTA">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <class>com.example.entities.APP_USERS</class>
         <properties>
@@ -15,7 +15,7 @@
             <property name="jakarta.persistence.jdbc.password" value="prism2companyIT"/>
 
             <!-- Création automatique des tables -->
-            <property name="jakarta.persistence.schema-generation.database.action" value="create"/>
+            <property name="jakarta.persistence.schema-generation.database.action" value="validate"/>
             <property name="hibernate.physical_naming_strategy" value="org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl"/>
             <property name="hibernate.globally_quoted_identifiers" value="true"/>
 
