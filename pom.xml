@@ -9,6 +9,25 @@
   <name>test_j2ee Maven Webapp</name>
   <url>http://maven.apache.org</url>
 
+  <repositories>
+    <repository>
+      <id>central</id>
+      <url>https://repo.maven.apache.org/maven2</url>
+    </repository>
+
+    <repository>
+      <id>jitpack.io</id>
+      <url>https://jitpack.io</url>
+    </repository>
+
+    <repository>
+      <id>snapshots-repo</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+      <releases><enabled>false</enabled></releases>
+      <snapshots><enabled>true</enabled></snapshots>
+    </repository>
+  </repositories>
+
   <dependencies>
     <!-- JUnit (pour les tests) -->
     <dependency>
@@ -63,6 +82,13 @@
       <version>1.3.2</version>
       <scope>provided</scope>
     </dependency>
+
+    <dependency>
+      <groupId>org.mindrot</groupId>
+      <artifactId>jbcrypt</artifactId>
+      <version>0.4</version>
+    </dependency>
+
 
 
 
