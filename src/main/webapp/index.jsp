@@ -8,12 +8,11 @@
     <nav>
         <ul>
             <li><a href="listusers">Voir les utilisateurs</a></li>
-            <li><a href="#" onclick="importJson()">Importer les données JSON</a></li>
+            <li><a href="#" onclick="importJson()">Importer les données du formulaire</a></li>
             <li><a href="#" onclick="importPuits()">Importer les puits</a></li> <!-- ✅ -->
             <li><a href="#" onclick="importDelaiOpr()">Importer les delai opr</a></li>
-             <li><a href="#" onclick="importJournalDelai()">Importer les journal delai </a></li>
              <li><a href="#" onclick="importCoutOpr()">Importer les cout </a></li>
-               <li><a href="#" onclick="importJournalQualite()">Importer les cout </a></li>
+               <li><a href="#" onclick="importJournalQualite()">Importer le journal qualite  </a></li>
         </ul>
     </nav>
 
