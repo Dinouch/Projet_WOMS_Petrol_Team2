@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Import JSON</title>
+</head>
+<body>
+<h2>Importer le fichier JSON</h2>
+
+<!-- Formulaire pointant vers votre servlet -->
+<form action="importJson" method="post" enctype="multipart/form-data">
+    <input type="file" name="jsonFile" accept=".json">
+    <button type="submit">Importer</button>
+</form>
+
+<!-- Option : Chargement automatique depuis le chemin local -->
+<script>
+    async function loadLocalJson() {
+        const response = await fetch('http://localhost:8080/test_j2ee/importJson', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                path: 'D:/downloads/drilling_report_data.json'
+            })
+        });
+        const result = await response.text();
+        alert(result);
+    }
+</script>
+</body>
+</html>
