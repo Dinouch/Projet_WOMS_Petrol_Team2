@@ -2,6 +2,7 @@ package com.example.dao;
 
 import com.example.entities.APP_USERS;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import java.util.List;
 
 public class UserDAO {
@@ -20,7 +21,20 @@ public class UserDAO {
     }
 
     public List<APP_USERS> getAllUsers() {
-        return entityManager.createQuery("SELECT u FROM APP_USERS u", APP_USERS.class).getResultList();
+        return entityManager.createQuery("SELECT u FROM APP_USERS u", APP_USERS.class)
+                .getResultList();
+    }
+
+    public APP_USERS getUserByEmail(String email) {
+        try {
+            return entityManager.createQuery(
+                            "SELECT u FROM APP_USERS u WHERE u.email = :email",
+                            APP_USERS.class)
+                    .setParameter("email", email)
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 
     public void updateUser(APP_USERS user) {
@@ -31,6 +45,14 @@ public class UserDAO {
         APP_USERS user = getUserById(id);
         if (user != null) {
             entityManager.remove(user);
+        }
+    }
+
+    public void setUserConnectedStatus(Long id, boolean isConnected) {
+        APP_USERS user = getUserById(id);
+        if (user != null) {
+            user.setConnected(isConnected);
+            entityManager.merge(user);
         }
     }
 }
