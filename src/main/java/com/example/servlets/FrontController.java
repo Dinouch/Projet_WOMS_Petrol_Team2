@@ -22,7 +22,19 @@ import java.io.OutputStream;
 import java.nio.file.Paths;
 import java.util.List;
 
-@WebServlet(urlPatterns = {"", "/", "/listusers", "/upload-excel", "/download-json"})
+@WebServlet(urlPatterns = {
+    "", "/", 
+    "/listusers", 
+    "/upload-excel", 
+    "/download-json",
+    "/importJson",
+    "/importPuits",
+    "/importDelaiOpr",
+    "/importJournalDelai",
+    "/importCoutOpr",
+    "/importJournalQualite",
+    "/createZone"
+})
 @MultipartConfig(
         fileSizeThreshold = 1024 * 1024 * 1,    // 1 MB
         maxFileSize = 1024 * 1024 * 10,         // 10 MB
@@ -51,6 +63,27 @@ public class FrontController extends HttpServlet {
                 case "/download-json":
                     handleDownloadJson(request, response);
                     break;
+                case "/importJson":
+                    request.getRequestDispatcher("/importJson.jsp").forward(request, response);
+                    break;
+                case "/createZone":
+                    request.getRequestDispatcher("/createZone.jsp").forward(request, response);
+                    break;
+                case "/importPuits":
+                    request.getRequestDispatcher("/importPuits.jsp").forward(request, response);
+                    break;
+                case "/importDelaiOpr":
+                    request.getRequestDispatcher("/importDelaiOpr.jsp").forward(request, response);
+                    break;
+                case "/importJournalDelai":
+                    request.getRequestDispatcher("/importJournalDelai.jsp").forward(request, response);
+                    break;
+                case "/importCoutOpr":
+                    request.getRequestDispatcher("/importCoutOpr.jsp").forward(request, response);
+                    break;
+                case "/importJournalQualite":
+                    request.getRequestDispatcher("/importJournalQualite.jsp").forward(request, response);
+                    break;
                 default:
                     response.sendError(HttpServletResponse.SC_NOT_FOUND, "Page not found");
             }
@@ -69,10 +102,33 @@ public class FrontController extends HttpServlet {
         System.out.println("[FrontController] POST request to: " + servletPath);
 
         try {
-            if ("/upload-excel".equals(servletPath)) {
-                handleExcelUpload(request, response);
-            } else {
-                response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            switch (servletPath) {
+                case "/upload-excel":
+                    handleExcelUpload(request, response);
+                    break;
+                case "/importJson":
+                    new ImportJsonServlet().doPost(request, response);
+                    break;
+                case "/createZone":
+                    new CreateZoneServlet().doPost(request, response);
+                    break;
+                case "/importPuits":
+                    new ImportPuitsServlet().doPost(request, response);
+                    break;
+                case "/importDelaiOpr":
+                    new ImportDelaiOprServlet().doPost(request, response);
+                    break;
+                case "/importJournalDelai":
+                    new ImportJournalDelaiServlet().doPost(request, response);
+                    break;
+                case "/importCoutOpr":
+                    new ImportCoutOprServlet().doPost(request, response);
+                    break;
+                case "/importJournalQualite":
+                    new ImportJournalQualiteServlet().doPost(request, response);
+                    break;
+                default:
+                    response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -83,7 +139,6 @@ public class FrontController extends HttpServlet {
 
     private void handleListUsers(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
         EntityManager em = null;
         try {
             em = JpaUtil.getEntityManager();
@@ -105,19 +160,14 @@ public class FrontController extends HttpServlet {
     private void handleExcelUpload(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, Exception {
 
-        // Vérifie qu'il s'agit bien d'un upload de fichier
         if (!request.getContentType().startsWith("multipart/form-data")) {
             throw new Exception("Form must be multipart/form-data");
         }
 
-        // Récupère le fichier uploadé
         Part filePart = request.getPart("excelFile");
         String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
-
-        // Récupère le type de rapport sélectionné
         String reportType = request.getParameter("reportType");
 
-        // Validation du fichier
         if (fileName == null || fileName.isEmpty()) {
             throw new Exception("No file selected");
         }
@@ -126,44 +176,30 @@ public class FrontController extends HttpServlet {
             throw new Exception("Only .xlsx and .xls files are allowed");
         }
 
-        // Crée le répertoire d'upload si inexistant
         String uploadPath = getServletContext().getRealPath("") + File.separator + UPLOAD_DIRECTORY;
         File uploadDir = new File(uploadPath);
         if (!uploadDir.exists()) {
             uploadDir.mkdirs();
         }
 
-        // Sauvegarde le fichier
         String filePath = uploadPath + File.separator + fileName;
         filePart.write(filePath);
 
-        // Nom du fichier JSON de sortie
         String jsonOutputPath = uploadPath + File.separator + System.currentTimeMillis() + "_result.json";
         JSONObject result = null;
 
-        // Traite le fichier Excel selon le type de rapport
         if ("drilling".equals(reportType)) {
-            // Parser pour rapport de forage
             result = DrillingReportParser.parseDrillingReport(filePath, jsonOutputPath);
-
-            // Prépare la réponse pour le drilling report
             request.setAttribute("excelData", result);
             request.setAttribute("jsonFilePath", jsonOutputPath);
             request.setAttribute("originalFileName", fileName);
             request.setAttribute("jsonString", result.toString());
-
-            // Forward vers la JSP de rapport de forage
             request.getRequestDispatcher("/drilling-result.jsp").forward(request, response);
         } else {
-            // Parser par défaut pour coûts journaliers
             result = ExcelDailyCostParser.extractDailyCostData(filePath, jsonOutputPath);
-
-            // Prépare la réponse pour le daily cost report
             request.setAttribute("excelData", result);
             request.setAttribute("jsonFilePath", jsonOutputPath);
             request.setAttribute("originalFileName", fileName);
-
-            // Forward vers la JSP des coûts journaliers
             request.getRequestDispatcher("/excel-result.jsp").forward(request, response);
         }
     }
@@ -183,15 +219,12 @@ public class FrontController extends HttpServlet {
             return;
         }
 
-        // Configure la réponse pour le téléchargement
         response.setContentType("application/json");
         response.setHeader("Content-Disposition",
                 "attachment; filename=\"export_" + System.currentTimeMillis() + ".json\"");
 
-        // Stream le fichier vers la réponse
         try (InputStream in = new java.io.FileInputStream(file);
              OutputStream out = response.getOutputStream()) {
-
             byte[] buffer = new byte[4096];
             int length;
             while ((length = in.read(buffer)) > 0) {

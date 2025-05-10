@@ -20,6 +20,95 @@
     <nav>
         <a href="listusers" class="btn">Voir les utilisateurs</a>
         <a href="upload.jsp" class="btn">Importer un Excel</a>
+        <ul>
+            <li><a href="listusers">Voir les utilisateurs</a></li>
+            <li><a href="#" onclick="importJson()">Importer les données du formulaire</a></li>
+            <li><a href="#" onclick="importPuits()">Importer les puits</a></li> <!-- ✅ -->
+            <li><a href="#" onclick="importDelaiOpr()">Importer les delai opr</a></li>
+             <li><a href="#" onclick="importCoutOpr()">Importer les cout </a></li>
+               <li><a href="#" onclick="importJournalQualite()">Importer le journal qualite  </a></li>
+        </ul>
     </nav>
+
+    <script>
+        function importJson() {
+            fetch('importJson', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.text())
+            .then(data => alert(data))
+            .catch(error => alert('Erreur: ' + error));
+        }
+
+        function importPuits() {
+            fetch('importPuits', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.text())
+            .then(data => alert(data))
+            .catch(error => alert('Erreur: ' + error));
+        }
+
+
+
+
+        function importDelaiOpr() {
+            fetch('importDelaiOpr', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.text())
+            .then(data => alert(data))
+            .catch(error => alert('Erreur: ' + error));
+        }
+
+
+           function importJournalDelai() {
+                    fetch('importJournalDelai', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(response => response.text())
+                    .then(data => alert(data))
+                    .catch(error => alert('Erreur: ' + error));
+                }
+
+
+           function importCoutOpr() {
+              fetch('importCoutOpr', {
+                    method: 'POST',
+                                   headers: {
+                                       'Content-Type': 'application/json'
+                                   }
+                               })
+                               .then(response => response.text())
+                               .then(data => alert(data))
+                               .catch(error => alert('Erreur: ' + error));
+                           }
+
+
+
+            function importJournalQualite() {
+                     fetch('importJournalQualite', {
+                         method: 'POST',
+                         headers: {
+                             'Content-Type': 'application/json'
+                         }
+                     })
+                     .then(response => response.text())
+                     .then(data => alert(data))
+                     .catch(error => alert('Erreur: ' + error));
+                 }
+    </script>
 </body>
 </html>

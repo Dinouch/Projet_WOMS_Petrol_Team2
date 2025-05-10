@@ -7,6 +7,13 @@
     <persistence-unit name="myPU" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <class>com.example.entities.APP_USERS</class>
+        <class>com.example.entities.FORMULAIRE</class>
+        <class>com.example.entities.ZONE</class>
+        <class>com.example.entities.PUITS</class>
+        <class>com.example.entities.DelaiOpr</class>
+        <class>com.example.entities.JournalDelai</class>
+        <class>com.example.entities.CoutOpr</class>
+        <class>com.example.entities.Journal_qualite</class>
         <properties>
             <!-- Configuration Oracle -->
             <property name="jakarta.persistence.jdbc.driver" value="oracle.jdbc.OracleDriver"/>
@@ -22,6 +29,9 @@
             <!-- Configuration spécifique Oracle -->
             <property name="hibernate.dialect" value="org.hibernate.dialect.Oracle12cDialect"/>
             <property name="hibernate.id.new_generator_mappings" value="true"/>
+
+
+
 
             <!-- Logs SQL -->
             <property name="hibernate.show_sql" value="true"/>
