@@ -1,11 +1,12 @@
 package com.example.servlets;
 
-import com.example.config.JpaUtil;
+import com.example.dao.DrillingParametersDAO;
 import com.example.dao.UserDAO;
 import com.example.entities.APP_USERS;
+import com.example.entities.DRILLING_PARAMETERS;
 import com.example.utils.ExcelDailyCostParser;
 import com.example.utils.DrillingReportParser;
-import jakarta.persistence.EntityManager;
+import jakarta.ejb.EJB;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
@@ -23,17 +24,19 @@ import java.nio.file.Paths;
 import java.util.List;
 
 @WebServlet(urlPatterns = {
-    "", "/", 
-    "/listusers", 
-    "/upload-excel", 
-    "/download-json",
-    "/importJson",
-    "/importPuits",
-    "/importDelaiOpr",
-    "/importJournalDelai",
-    "/importCoutOpr",
-    "/importJournalQualite",
-    "/createZone"
+        "", "/",
+        "/listusers",
+        "/upload-excel",
+        "/download-json",
+        "/importJson",
+        "/importPuits",
+        "/importDelaiOpr",
+        "/importJournalDelai",
+        "/importCoutOpr",
+        "/importJournalQualite",
+        "/createZone",
+        "/drilling-parameters",
+        "/importDrillingParameters"
 })
 @MultipartConfig(
         fileSizeThreshold = 1024 * 1024 * 1,    // 1 MB
@@ -43,6 +46,12 @@ import java.util.List;
 public class FrontController extends HttpServlet {
 
     private static final String UPLOAD_DIRECTORY = "uploads";
+
+    @EJB
+    private UserDAO userDAO;
+
+    @EJB
+    private DrillingParametersDAO drillingParametersDAO;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -83,6 +92,12 @@ public class FrontController extends HttpServlet {
                     break;
                 case "/importJournalQualite":
                     request.getRequestDispatcher("/importJournalQualite.jsp").forward(request, response);
+                    break;
+                case "/drilling-parameters":
+                    handleDrillingParameters(request, response);
+                    break;
+                case "/importDrillingParameters":
+                    request.getRequestDispatcher("/importDrillingParameters.jsp").forward(request, response);
                     break;
                 default:
                     response.sendError(HttpServletResponse.SC_NOT_FOUND, "Page not found");
@@ -127,6 +142,9 @@ public class FrontController extends HttpServlet {
                 case "/importJournalQualite":
                     new ImportJournalQualiteServlet().doPost(request, response);
                     break;
+                case "/importDrillingParameters":
+                    new ImportDrillingParametersServlet().doPost(request, response);
+                    break;
                 default:
                     response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
             }
@@ -137,99 +155,110 @@ public class FrontController extends HttpServlet {
         }
     }
 
+    private void handleDrillingParameters(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        try {
+            DRILLING_PARAMETERS latestParams = drillingParametersDAO.getLatestParameters();
+            request.setAttribute("drillingParams", latestParams);
+            request.getRequestDispatcher("/drillingDashboard.jsp").forward(request, response);
+        } catch (Exception e) {
+            throw new ServletException("Error fetching drilling parameters: " + e.getMessage(), e);
+        }
+    }
+
     private void handleListUsers(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        EntityManager em = null;
         try {
-            em = JpaUtil.getEntityManager();
-            UserDAO userDAO = new UserDAO(em);
-
             List<APP_USERS> users = userDAO.getAllUsers();
             System.out.println("[DEBUG] Found " + users.size() + " users");
 
             request.setAttribute("users", users);
             request.getRequestDispatcher("/testuser.jsp").forward(request, response);
-
-        } finally {
-            if (em != null) {
-                JpaUtil.closeEntityManager(em);
-            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ServletException("Error fetching users: " + e.getMessage(), e);
         }
     }
 
     private void handleExcelUpload(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, Exception {
+            throws ServletException, IOException {
+        try {
+            if (!request.getContentType().startsWith("multipart/form-data")) {
+                throw new ServletException("Form must be multipart/form-data");
+            }
 
-        if (!request.getContentType().startsWith("multipart/form-data")) {
-            throw new Exception("Form must be multipart/form-data");
-        }
+            Part filePart = request.getPart("excelFile");
+            String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
+            String reportType = request.getParameter("reportType");
 
-        Part filePart = request.getPart("excelFile");
-        String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
-        String reportType = request.getParameter("reportType");
+            if (fileName == null || fileName.isEmpty()) {
+                throw new ServletException("No file selected");
+            }
 
-        if (fileName == null || fileName.isEmpty()) {
-            throw new Exception("No file selected");
-        }
+            if (!fileName.toLowerCase().endsWith(".xlsx") && !fileName.toLowerCase().endsWith(".xls")) {
+                throw new ServletException("Only .xlsx and .xls files are allowed");
+            }
 
-        if (!fileName.toLowerCase().endsWith(".xlsx") && !fileName.toLowerCase().endsWith(".xls")) {
-            throw new Exception("Only .xlsx and .xls files are allowed");
-        }
+            String uploadPath = getServletContext().getRealPath("") + File.separator + UPLOAD_DIRECTORY;
+            File uploadDir = new File(uploadPath);
+            if (!uploadDir.exists()) {
+                uploadDir.mkdirs();
+            }
 
-        String uploadPath = getServletContext().getRealPath("") + File.separator + UPLOAD_DIRECTORY;
-        File uploadDir = new File(uploadPath);
-        if (!uploadDir.exists()) {
-            uploadDir.mkdirs();
-        }
+            String filePath = uploadPath + File.separator + fileName;
+            filePart.write(filePath);
 
-        String filePath = uploadPath + File.separator + fileName;
-        filePart.write(filePath);
+            String jsonOutputPath = uploadPath + File.separator + System.currentTimeMillis() + "_result.json";
+            JSONObject result = null;
 
-        String jsonOutputPath = uploadPath + File.separator + System.currentTimeMillis() + "_result.json";
-        JSONObject result = null;
-
-        if ("drilling".equals(reportType)) {
-            result = DrillingReportParser.parseDrillingReport(filePath, jsonOutputPath);
-            request.setAttribute("excelData", result);
-            request.setAttribute("jsonFilePath", jsonOutputPath);
-            request.setAttribute("originalFileName", fileName);
-            request.setAttribute("jsonString", result.toString());
-            request.getRequestDispatcher("/drilling-result.jsp").forward(request, response);
-        } else {
-            result = ExcelDailyCostParser.extractDailyCostData(filePath, jsonOutputPath);
-            request.setAttribute("excelData", result);
-            request.setAttribute("jsonFilePath", jsonOutputPath);
-            request.setAttribute("originalFileName", fileName);
-            request.getRequestDispatcher("/excel-result.jsp").forward(request, response);
+            if ("drilling".equals(reportType)) {
+                result = DrillingReportParser.parseDrillingReport(filePath, jsonOutputPath);
+                request.setAttribute("excelData", result);
+                request.setAttribute("jsonFilePath", jsonOutputPath);
+                request.setAttribute("originalFileName", fileName);
+                request.setAttribute("jsonString", result.toString());
+                request.getRequestDispatcher("/drilling-result.jsp").forward(request, response);
+            } else {
+                result = ExcelDailyCostParser.extractDailyCostData(filePath, jsonOutputPath);
+                request.setAttribute("excelData", result);
+                request.setAttribute("jsonFilePath", jsonOutputPath);
+                request.setAttribute("originalFileName", fileName);
+                request.getRequestDispatcher("/excel-result.jsp").forward(request, response);
+            }
+        } catch (Exception e) {
+            throw new ServletException("Error processing Excel file: " + e.getMessage(), e);
         }
     }
 
     private void handleDownloadJson(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
-        String filePath = request.getParameter("filePath");
-        if (filePath == null || filePath.isEmpty()) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing filePath parameter");
-            return;
-        }
-
-        File file = new File(filePath);
-        if (!file.exists()) {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND, "JSON file not found");
-            return;
-        }
-
-        response.setContentType("application/json");
-        response.setHeader("Content-Disposition",
-                "attachment; filename=\"export_" + System.currentTimeMillis() + ".json\"");
-
-        try (InputStream in = new java.io.FileInputStream(file);
-             OutputStream out = response.getOutputStream()) {
-            byte[] buffer = new byte[4096];
-            int length;
-            while ((length = in.read(buffer)) > 0) {
-                out.write(buffer, 0, length);
+        try {
+            String filePath = request.getParameter("filePath");
+            if (filePath == null || filePath.isEmpty()) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing filePath parameter");
+                return;
             }
+
+            File file = new File(filePath);
+            if (!file.exists()) {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "JSON file not found");
+                return;
+            }
+
+            response.setContentType("application/json");
+            response.setHeader("Content-Disposition",
+                    "attachment; filename=\"export_" + System.currentTimeMillis() + ".json\"");
+
+            try (InputStream in = new java.io.FileInputStream(file);
+                 OutputStream out = response.getOutputStream()) {
+                byte[] buffer = new byte[4096];
+                int length;
+                while ((length = in.read(buffer)) > 0) {
+                    out.write(buffer, 0, length);
+                }
+            }
+        } catch (Exception e) {
+            throw new ServletException("Error downloading JSON file: " + e.getMessage(), e);
         }
     }
 }

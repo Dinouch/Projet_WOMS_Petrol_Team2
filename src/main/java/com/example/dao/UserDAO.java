@@ -1,16 +1,17 @@
 package com.example.dao;
 
 import com.example.entities.APP_USERS;
+import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.NoResultException;
 import java.util.List;
 
+@Stateless
 public class UserDAO {
-    private final EntityManager entityManager;
 
-    public UserDAO(EntityManager entityManager) {
-        this.entityManager = entityManager;
-    }
+    @PersistenceContext(unitName = "myPU")
+    private EntityManager entityManager;
 
     public void addUser(APP_USERS user) {
         entityManager.persist(user);

@@ -1,17 +1,17 @@
 package com.example.servlets;
 
-import com.example.config.JpaUtil;
 import com.example.dao.UserDAO;
 import com.example.entities.APP_USERS;
 import com.example.PasswordHasher;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import jakarta.persistence.EntityManager;
+import jakarta.ejb.EJB;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.List;
@@ -19,6 +19,9 @@ import java.util.List;
 @WebServlet("/users/*")
 public class UserServlet extends HttpServlet {
     private final Gson gson = new Gson();
+
+    @EJB
+    private UserDAO userDAO;
 
     private void setCorsHeaders(HttpServletResponse response) {
         response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
@@ -59,7 +62,6 @@ public class UserServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         setCorsHeaders(resp);
-        EntityManager em = JpaUtil.getEntityManager();
         try {
             BufferedReader reader = req.getReader();
             APP_USERS user = gson.fromJson(reader, APP_USERS.class);
@@ -69,26 +71,19 @@ public class UserServlet extends HttpServlet {
                 return;
             }
 
-            UserDAO dao = new UserDAO(em);
-            if (dao.getUserByEmail(user.getEmail()) != null) {
+            if (userDAO.getUserByEmail(user.getEmail()) != null) {
                 sendError(resp, HttpServletResponse.SC_CONFLICT, "Email already exists");
                 return;
             }
 
             user.setPassword(PasswordHasher.hashPassword(user.getPassword()));
-
-            JpaUtil.beginTransaction(em);
-            dao.addUser(user);
-            JpaUtil.commitTransaction(em);
+            userDAO.addUser(user);
 
             resp.setStatus(HttpServletResponse.SC_CREATED);
             resp.setContentType("application/json");
             resp.getWriter().write("{\"message\":\"User created successfully\"}");
         } catch (Exception e) {
-            JpaUtil.rollbackTransaction(em);
             sendError(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-        } finally {
-            JpaUtil.closeEntityManager(em);
         }
     }
 
@@ -117,7 +112,6 @@ public class UserServlet extends HttpServlet {
     }
 
     private void authenticateUser(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        EntityManager em = JpaUtil.getEntityManager();
         try {
             BufferedReader reader = req.getReader();
             JsonObject authRequest = gson.fromJson(reader, JsonObject.class);
@@ -130,73 +124,56 @@ public class UserServlet extends HttpServlet {
             String email = authRequest.get("email").getAsString();
             String password = authRequest.get("password").getAsString();
 
-            UserDAO dao = new UserDAO(em);
-            APP_USERS user = dao.getUserByEmail(email);
+            APP_USERS user = userDAO.getUserByEmail(email);
 
             if (user == null || !PasswordHasher.verifyPassword(password, user.getPassword())) {
                 sendError(resp, HttpServletResponse.SC_UNAUTHORIZED, "Invalid email or password");
                 return;
             }
 
-            JpaUtil.beginTransaction(em);
             user.setConnected(true);
-            dao.updateUser(user);
-            JpaUtil.commitTransaction(em);
+            userDAO.updateUser(user);
 
             user.setPassword(null);
             resp.setContentType("application/json");
             resp.getWriter().write(gson.toJson(user));
         } catch (Exception e) {
-            JpaUtil.rollbackTransaction(em);
             sendError(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-        } finally {
-            JpaUtil.closeEntityManager(em);
         }
     }
 
     private void logoutUser(HttpServletRequest req, HttpServletResponse resp, Long userId) throws IOException {
-        EntityManager em = JpaUtil.getEntityManager();
         try {
-            UserDAO dao = new UserDAO(em);
-            APP_USERS user = dao.getUserById(userId);
+            APP_USERS user = userDAO.getUserById(userId);
 
             if (user == null) {
                 sendError(resp, HttpServletResponse.SC_NOT_FOUND, "User not found");
                 return;
             }
 
-            JpaUtil.beginTransaction(em);
             user.setConnected(false);
-            dao.updateUser(user);
-            JpaUtil.commitTransaction(em);
+            userDAO.updateUser(user);
 
             resp.setContentType("application/json");
             resp.getWriter().write("{\"message\":\"User logged out successfully\"}");
         } catch (Exception e) {
-            JpaUtil.rollbackTransaction(em);
             sendError(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-        } finally {
-            JpaUtil.closeEntityManager(em);
         }
     }
 
     private void getAllUsers(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        EntityManager em = JpaUtil.getEntityManager();
         try {
-            UserDAO dao = new UserDAO(em);
-            List<APP_USERS> users = dao.getAllUsers();
+            List<APP_USERS> users = userDAO.getAllUsers();
             resp.setContentType("application/json");
             resp.getWriter().write(gson.toJson(users));
-        } finally {
-            JpaUtil.closeEntityManager(em);
+        } catch (Exception e) {
+            sendError(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 
     private void getUserById(HttpServletRequest req, HttpServletResponse resp, Long id) throws IOException {
-        EntityManager em = JpaUtil.getEntityManager();
         try {
-            UserDAO dao = new UserDAO(em);
-            APP_USERS user = dao.getUserById(id);
+            APP_USERS user = userDAO.getUserById(id);
 
             if (user == null) {
                 sendError(resp, HttpServletResponse.SC_NOT_FOUND, "User not found");
@@ -205,8 +182,8 @@ public class UserServlet extends HttpServlet {
 
             resp.setContentType("application/json");
             resp.getWriter().write(gson.toJson(user));
-        } finally {
-            JpaUtil.closeEntityManager(em);
+        } catch (Exception e) {
+            sendError(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 
