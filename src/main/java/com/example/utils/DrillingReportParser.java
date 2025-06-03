@@ -1,4 +1,8 @@
 package com.example.utils;
+import com.example.dao.FichierDrillingDAO;
+import com.example.entities.FICHIER_DRILLING;
+import jakarta.ejb.EJB;
+import jakarta.ejb.Stateless;
 import org.apache.poi.ss.usermodel.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -6,6 +10,8 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -2162,4 +2168,35 @@ public class DrillingReportParser {
             }
         }
     }
+
+
+    public static JSONObject importDrillingReport(String filePath, FichierDrillingDAO fichierDrillingDAO) {
+        try {
+            // 1. Génère le JSON à partir du rapport (et l’enregistre dans data/)
+            JSONObject drillingData = parseDrillingReport(filePath, "drilling_report_data.json");
+
+            // 2. Lit le fichier Excel en binaire
+            byte[] excelBytes = Files.readAllBytes(Paths.get(filePath));
+
+            // 3. Crée et enregistre l’objet
+            FICHIER_DRILLING fichier = new FICHIER_DRILLING();
+            fichier.setNomFichier(new File(filePath).getName());
+            fichier.setContenuFichier(excelBytes);
+            fichier.setJsonData(drillingData.toString(2));
+            fichier.setDateUpload(new Date());
+
+            fichierDrillingDAO.save(fichier);
+            System.out.println("✔️ Rapport et JSON enregistrés avec succès en base.");
+
+            return drillingData;
+
+        } catch (Exception e) {
+            System.err.println("❌ Erreur lors de l'import du fichier :");
+            e.printStackTrace();
+            return null; // ou throw RuntimeException(e) pour forcer la gestion côté servlet
+        }
+    }
+
+
 }
+

@@ -1,9 +1,11 @@
 package com.example.servlets;
 
 import com.example.dao.DrillingParametersDAO;
+import com.example.dao.FichierDrillingDAO;
 import com.example.dao.UserDAO;
 import com.example.entities.APP_USERS;
 import com.example.entities.DRILLING_PARAMETERS;
+import com.example.utils.DrillingReportParserEJB;
 import com.example.utils.ExcelDailyCostParser;
 import com.example.utils.DrillingReportParser;
 import jakarta.ejb.EJB;
@@ -52,6 +54,12 @@ public class FrontController extends HttpServlet {
 
     @EJB
     private DrillingParametersDAO drillingParametersDAO;
+    @EJB
+    private FichierDrillingDAO fichierDrillingDAO;
+
+    @EJB
+    private DrillingReportParserEJB drillingReportParserEJB;
+
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -212,14 +220,18 @@ public class FrontController extends HttpServlet {
             JSONObject result = null;
 
             if ("drilling".equals(reportType)) {
-                result = DrillingReportParser.parseDrillingReport(filePath, jsonOutputPath);
-                request.setAttribute("excelData", result);
+                // L'import effectue à la fois l'enregistrement du fichier Excel en DB
+                // et la sauvegarde du JSON dans le fichier
+                result = drillingReportParserEJB.importDrillingReport(filePath);
+
                 request.setAttribute("jsonFilePath", jsonOutputPath);
                 request.setAttribute("originalFileName", fileName);
                 request.setAttribute("jsonString", result.toString());
                 request.getRequestDispatcher("/drilling-result.jsp").forward(request, response);
             } else {
+                // Cas daily cost
                 result = ExcelDailyCostParser.extractDailyCostData(filePath, jsonOutputPath);
+
                 request.setAttribute("excelData", result);
                 request.setAttribute("jsonFilePath", jsonOutputPath);
                 request.setAttribute("originalFileName", fileName);
@@ -229,6 +241,7 @@ public class FrontController extends HttpServlet {
             throw new ServletException("Error processing Excel file: " + e.getMessage(), e);
         }
     }
+
 
     private void handleDownloadJson(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

@@ -33,6 +33,19 @@
     </nav>
 
     <script>
+
+        function importDrillingParameters() {
+            fetch('importDrillingParameters', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.text())
+            .then(data => alert(data))
+            .catch(error => alert('Erreur: ' + error));
+        }
+
     function importDrillingParameters() {
         fetch('importDrillingParameters', {
             method: 'POST',
