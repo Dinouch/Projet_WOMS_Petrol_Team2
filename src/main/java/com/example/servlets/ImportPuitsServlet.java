@@ -56,7 +56,7 @@ public class ImportPuitsServlet extends HttpServlet {
                 String dateStr = header.get("report_date").getAsString();
                 SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
                 Date parsedDate = sdf.parse(dateStr);
-                puits.setDate(new java.sql.Date(parsedDate.getTime()));
+
 
                 puits.setCode(null);
                 puits.setStatut_cout(null);

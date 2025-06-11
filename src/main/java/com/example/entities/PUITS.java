@@ -20,10 +20,14 @@ public class PUITS {
     @Temporal(TemporalType.DATE)
     private Date date_fin_reelle;
 
+    @Column(name = "STATUT_COUT")
     private String statut_cout;
+
+    @Column(name = "STATUT_DELAI")
     private String statut_delai;
     private String nom_puit;
     private String code;
+
 
     @ManyToOne
     @JoinColumn(name = "id_zone")
@@ -39,6 +43,11 @@ public class PUITS {
     public Long getId_puit() {
         return id_puit;
     }
+
+    public void setId(Long id) {
+        this.id_puit = id;
+    }
+
 
     public void setId_puit(Long id_puit) {
         this.id_puit = id_puit;
@@ -108,5 +117,15 @@ public class PUITS {
     public void setDate(Date date) {
         this.date_creation = date;
     }
+
+    // Dans PUITS.java
+    public void setZoneId(Long zoneId) {
+        if (zoneId != null) {
+            ZONE zone = new ZONE();
+            zone.setIdZone(zoneId);
+            this.zone = zone;
+        }
+    }
+
 }
 
