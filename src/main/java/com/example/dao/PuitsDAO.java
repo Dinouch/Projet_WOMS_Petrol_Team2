@@ -3,16 +3,11 @@ package com.example.dao;
 import com.example.entities.PUITS;
 import com.example.entities.ZONE;
 import jakarta.ejb.Stateless;
-import jakarta.ejb.TransactionAttribute;
-import jakarta.ejb.TransactionAttributeType;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.TypedQuery;
-
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Stateless
 public class PuitsDAO {
@@ -20,64 +15,67 @@ public class PuitsDAO {
     @PersistenceContext(unitName = "myPU")
     private EntityManager em;
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public void save(PUITS puits) {
-        em.persist(puits);
-        em.flush();
+    public PUITS save(PUITS puits) {
+        if (puits.getId_puit() == null) {
+            em.persist(puits);
+            em.flush(); // Force la synchronisation pour obtenir l'ID généré
+            return puits;
+        } else {
+            return em.merge(puits);
+        }
     }
 
-    public ZONE findZoneById(long idZone) {
-        return em.find(ZONE.class, idZone);
+    public PUITS findById(Long id) {
+        return em.find(PUITS.class, id);
     }
 
-    public long countAllPuits() {
-        return em.createQuery("SELECT COUNT(p) FROM PUITS p", Long.class)
-                .getSingleResult();
+    public List<PUITS> findAll() {
+        return em.createQuery("SELECT p FROM PUITS p", PUITS.class).getResultList();
+    }
+
+    public List<PUITS> findAllWithZone() {
+        return em.createQuery("SELECT p FROM PUITS p LEFT JOIN FETCH p.zone", PUITS.class)
+                .getResultList();
+    }
+
+    public PUITS update(PUITS puits) {
+        return em.merge(puits);
     }
 
 
-
-
-
-    public List<ZONE> findAllZonesOrdered() {
-        return em.createQuery("SELECT z FROM ZONE z ORDER BY z.idZone", ZONE.class)
+    public void delete(Long id) {
+        PUITS puits = findById(id);
+        if (puits != null) {
+            em.remove(puits);
+        }
+    }
+    public List<PUITS> findAllWithCompleteZone() {
+        return em.createQuery(
+                        "SELECT p FROM PUITS p LEFT JOIN FETCH p.zone z LEFT JOIN FETCH z.champsAdditionnels",
+                        PUITS.class)
                 .getResultList();
     }
 
     public ZONE findZoneForNewPuit() throws IllegalStateException {
-        List<ZONE> zones = findAllZonesOrdered();
+        List<ZONE> zones = em.createQuery("SELECT z FROM ZONE z ORDER BY z.idZone", ZONE.class)
+                .getResultList();
 
         if (zones.isEmpty()) {
             throw new IllegalStateException("La table ZONE est vide. Créez d'abord des zones.");
         }
 
-        long nombrePuits = countAllPuits();
+        long nombrePuits = em.createQuery("SELECT COUNT(p) FROM PUITS p", Long.class)
+                .getSingleResult();
         int indexZone = (int)(nombrePuits % zones.size());
         return zones.get(indexZone);
     }
-    public List<PUITS> findAllPuitsOrdered() {
-        return em.createQuery("SELECT p FROM PUITS p ORDER BY p.id_puit", PUITS.class)
-                .getResultList();
-    }
-
 
     public PUITS findByDate(Date date) {
-        if (date == null) {
-            return null;
-        }
-
         try {
-            TypedQuery<PUITS> query = em.createQuery(
-                    "SELECT p FROM Puits p WHERE p.date = :date",
-                    PUITS.class
-            );
-            query.setParameter("date", date);
-
-            List<PUITS> results = query.getResultList();
-            return results.isEmpty() ? null : results.get(0);
-
-        } catch (Exception e) {
-            // Log l'erreur si nécessaire (ex: logger.error("Erreur recherche puits", e))
+            return em.createQuery("SELECT p FROM PUITS p WHERE p.date_creation = :date", PUITS.class)
+                    .setParameter("date", date)
+                    .getSingleResult();
+        } catch (NoResultException e) {
             return null;
         }
     }
