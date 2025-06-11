@@ -13,10 +13,43 @@
             <li><a href="#" onclick="importDelaiOpr()">Importer les delai opr</a></li>
              <li><a href="#" onclick="importCoutOpr()">Importer les cout </a></li>
                <li><a href="#" onclick="importJournalQualite()">Importer le journal qualite  </a></li>
+<<<<<<< Updated upstream
+=======
+               <li><a href="#" onclick="importDrillingParameters()">Importer les paramètres de forage</a></li>
+               <li><a href="#" onclick="coutAlerts()">alerte cout</a></li>
+>>>>>>> Stashed changes
         </ul>
     </nav>
 
     <script>
+<<<<<<< Updated upstream
+=======
+
+        function importDrillingParameters() {
+            fetch('importDrillingParameters', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.text())
+            .then(data => alert(data))
+            .catch(error => alert('Erreur: ' + error));
+        }
+
+    function importDrillingParameters() {
+        fetch('importDrillingParameters', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.text())
+        .then(data => alert(data))
+        .catch(error => alert('Erreur: ' + error));
+    }
+
+>>>>>>> Stashed changes
         function importJson() {
             fetch('importJson', {
                 method: 'POST',
@@ -95,6 +128,19 @@
                      .then(data => alert(data))
                      .catch(error => alert('Erreur: ' + error));
                  }
+
+
+                  function coutAlerts() {
+                                      fetch('coutAlerts', {
+                                          method: 'POST',
+                                          headers: {
+                                              'Content-Type': 'application/json'
+                                          }
+                                      })
+                                      .then(response => response.text())
+                                      .then(data => alert(data))
+                                      .catch(error => alert('Erreur: ' + error));
+                                  }
     </script>
 </body>
 </html>

@@ -1,9 +1,14 @@
 # deploy.ps1 - Version corrigée et testée
 param (
+<<<<<<< Updated upstream
     [string]$projectPath = "D:\downloads\Moi\me\Projet_WOMS_Petrol_Team2",
+=======
+    [string]$projectPath = "D:\downloads\Moi\me\projets\back_wows\Projet_WOMS_Petrol_Team2",
+>>>>>>> Stashed changes
     [string]$tomeePath = "C:\apache-tomee-webprofile-10.0.1",
     [string]$warName = "test_j2ee.war"
 )
+
 
 Write-Host "=== DÉPLOIEMENT AUTOMATIQUE TOMEE ===" -ForegroundColor Yellow
 Write-Host "Projet : $projectPath" -ForegroundColor Cyan
