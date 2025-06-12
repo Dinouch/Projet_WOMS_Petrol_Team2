@@ -294,7 +294,7 @@ Spécialisée dans la modélisation des données métier et l'optimisation des b
 **Encadrement Académique** :
 - Pr NADER Fahima
 - Pr CHALAL Rachid
-- Dr MAHFOUDI
+- Dr MAHFOUDI Amar
 
 **Supervision Client** :
 - Mr ABDELAZIZ Arezki (ancien cadre chez Sonatrach)
