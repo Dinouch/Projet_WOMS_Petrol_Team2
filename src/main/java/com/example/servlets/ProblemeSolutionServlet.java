@@ -25,6 +25,11 @@ public class ProblemeSolutionServlet extends HttpServlet {
     private ProblemeSolutionDAO problemeSolutionDAO;
 
     private final Gson gson = new Gson();
+
+    /**
+     * Configure les en-têtes CORS pour autoriser les requêtes cross-origin depuis React
+     * avec les méthodes HTTP standard et les headers personnalisés
+     */
     private void setCorsHeaders(HttpServletResponse response) {
         response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
         response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
@@ -34,6 +39,14 @@ public class ProblemeSolutionServlet extends HttpServlet {
     }
 
 
+    /**
+     * Gère les requêtes GET pour :
+     * - Récupérer un problème spécifique par son ID (paramètre 'id')
+     * - Lister tous les problèmes avec options de filtrage :
+     *   - withPuits: charge les données associées des puits
+     *   - withSolutions: filtre les problèmes ayant des solutions
+     * Retourne les données au format JSON
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -84,7 +97,16 @@ public class ProblemeSolutionServlet extends HttpServlet {
         } finally {
             out.flush();
         }
-    } @Override
+    }
+
+    /**
+     * Gère les requêtes POST pour créer un nouveau problème :
+     * - Valide la présence des champs obligatoires (descriptionProbleme, typeProbleme)
+     * - Définit automatiquement la date d'ajout
+     * - Persiste le nouveau problème en base de données
+     * Retourne le problème créé avec son ID généré
+     */
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         setCorsHeaders(response);
@@ -113,6 +135,13 @@ public class ProblemeSolutionServlet extends HttpServlet {
     }
 
 
+    /**
+     * Gère les requêtes PUT pour mettre à jour la solution d'un problème :
+     * - Requiert l'ID du problème et la description de la solution
+     * - Met à jour uniquement la solution (descriptionSolution)
+     * - Ne modifie pas les autres champs du problème
+     * Retourne un message de confirmation
+     */
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

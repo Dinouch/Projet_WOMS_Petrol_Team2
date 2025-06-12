@@ -17,10 +17,16 @@ public class UserDAO {
         entityManager.persist(user);
     }
 
+    /**
+     * Récupère un utilisateur par son identifiant unique
+     */
     public APP_USERS getUserById(Long id) {
         return entityManager.find(APP_USERS.class, id);
     }
 
+    /**
+     * Récupère la liste complète de tous les utilisateurs
+     */
     public List<APP_USERS> getAllUsers() {
         return entityManager.createQuery("SELECT u FROM APP_USERS u", APP_USERS.class)
                 .getResultList();
@@ -49,6 +55,9 @@ public class UserDAO {
         }
     }
 
+    /**
+     * Modifie le statut de connexion d'un utilisateur
+     */
     public void setUserConnectedStatus(Long id, boolean isConnected) {
         APP_USERS user = getUserById(id);
         if (user != null) {

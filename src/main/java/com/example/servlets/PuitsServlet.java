@@ -23,6 +23,11 @@ public class PuitsServlet extends HttpServlet {
     private PuitsDAO puitsDAO;
 
     private final Gson gson = new Gson();
+
+    /**
+     * Configuration des en-têtes CORS pour autoriser les requêtes cross-origin depuis React.
+     * Les en-têtes permettent les méthodes GET, POST, PUT, DELETE et OPTIONS.
+     */
     private void setCorsHeaders(HttpServletResponse response) {
         response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
         response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
@@ -31,6 +36,13 @@ public class PuitsServlet extends HttpServlet {
         response.setHeader("Access-Control-Max-Age", "3600");
     }
 
+
+    /**
+     * Gère les requêtes GET pour :
+     * - Récupérer un puit spécifique si un ID est fourni dans le path
+     * - Lister tous les puits avec leurs zones si aucun ID n'est spécifié
+     * Retourne les données au format JSON
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -66,6 +78,14 @@ public class PuitsServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Gère les requêtes POST pour créer un nouveau puit :
+     * - Parse le JSON reçu pour créer un objet PUITS
+     * - Gère l'attribution automatique de zone si non spécifiée
+     * - Définit la date de création automatiquement
+     * - Enregistre le nouveau puit en base
+     * Retourne le puit créé avec son ID généré
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -108,6 +128,14 @@ public class PuitsServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Gère les requêtes PUT pour mettre à jour un puit existant :
+     * - Récupère l'ID du puit depuis l'URL
+     * - Met à jour uniquement les champs présents dans le JSON reçu
+     * - Gère la mise à jour de la zone si spécifiée
+     * - Gère la conversion des dates au format yyyy-MM-dd
+     * Retourne le puit mis à jour
+     */
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

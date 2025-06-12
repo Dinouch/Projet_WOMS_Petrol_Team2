@@ -30,6 +30,10 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Collection;
 
+/**
+ * Servlet principal (Front Controller) qui gère toutes les requêtes entrantes.
+ * Configure les routes et délègue le traitement aux méthodes appropriées.
+ */
 @WebServlet(urlPatterns = {
         "", "/",
         "/listusers",
@@ -53,8 +57,10 @@ import java.util.Collection;
 )
 public class FrontController extends HttpServlet {
 
+    // Répertoire pour stocker les fichiers uploadés
     private static final String UPLOAD_DIRECTORY = "uploads";
 
+    // Injection des EJBs pour accéder aux données
     @EJB
     private UserDAO userDAO;
 
@@ -66,6 +72,9 @@ public class FrontController extends HttpServlet {
     @EJB
     private DrillingReportParserEJB drillingReportParserEJB;
 
+    /**
+     * Gère les requêtes OPTIONS pour CORS (Cross-Origin Resource Sharing)
+     */
     @Override
     protected void doOptions(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -74,6 +83,9 @@ public class FrontController extends HttpServlet {
         response.setStatus(HttpServletResponse.SC_OK);
     }
 
+    /**
+     * Configure les en-têtes CORS pour autoriser les requêtes cross-origin
+     */
     private void setCorsHeaders(HttpServletResponse response) {
         response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
         response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
@@ -81,6 +93,9 @@ public class FrontController extends HttpServlet {
         response.setHeader("Access-Control-Allow-Credentials", "true");
     }
 
+    /**
+     * Gère les requêtes GET en fonction du chemin demandé
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -93,47 +108,59 @@ public class FrontController extends HttpServlet {
             switch (servletPath) {
                 case "":
                 case "/":
+                    // Page d'accueil
                     request.getRequestDispatcher("/index.jsp").forward(request, response);
                     break;
                 case "/listusers":
+                    // Liste des utilisateurs
                     handleListUsers(request, response);
                     break;
                 case "/download-json":
+                    // Téléchargement d'un fichier JSON
                     handleDownloadJson(request, response);
                     break;
                 case "/importJson":
+                    // Page d'import JSON
                     request.getRequestDispatcher("/importJson.jsp").forward(request, response);
                     break;
                 case "/createZone":
+                    // Page de création de zone
                     request.getRequestDispatcher("/createZone.jsp").forward(request, response);
                     break;
                 case "/importPuits":
+                    // Page d'import de puits
                     request.getRequestDispatcher("/importPuits.jsp").forward(request, response);
                     break;
                 case "/importDelaiOpr":
+                    // Page d'import des délais d'opération
                     request.getRequestDispatcher("/importDelaiOpr.jsp").forward(request, response);
                     break;
                 case "/importJournalDelai":
+                    // Page d'import du journal des délais
                     request.getRequestDispatcher("/importJournalDelai.jsp").forward(request, response);
                     break;
                 case "/importCoutOpr":
+                    // Page d'import des coûts d'opération
                     request.getRequestDispatcher("/importCoutOpr.jsp").forward(request, response);
                     break;
                 case "/importJournalQualite":
+                    // Page d'import du journal de qualité
                     request.getRequestDispatcher("/importJournalQualite.jsp").forward(request, response);
                     break;
                 case "/drilling-parameters":
+                    // Affichage des paramètres de forage
                     handleDrillingParameters(request, response);
                     break;
                 case "/importDrillingParameters":
+                    // Page d'import des paramètres de forage
                     request.getRequestDispatcher("/importDrillingParameters.jsp").forward(request, response);
                     break;
-
                 case "/reports":
+                    // Gestion des rapports
                     handleGetReports(request, response);
-                break;
-
+                    break;
                 default:
+                    // Chemin non trouvé
                     response.sendError(HttpServletResponse.SC_NOT_FOUND, "Page not found");
             }
         } catch (Exception e) {
@@ -143,6 +170,9 @@ public class FrontController extends HttpServlet {
         }
     }
 
+    /**
+     * Gère les requêtes POST en fonction du chemin demandé
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -154,34 +184,44 @@ public class FrontController extends HttpServlet {
         try {
             switch (servletPath) {
                 case "/upload-excel":
+                    // Upload de fichiers Excel depuis React et traitement standard
                     handleReactExcelUpload(request, response);
                     handleExcelUpload(request, response);
                     break;
                 case "/importJson":
+                    // Import de JSON
                     new ImportJsonServlet().doPost(request, response);
                     break;
                 case "/createZone":
+                    // Création de zone
                     new CreateZoneServlet().doPost(request, response);
                     break;
                 case "/importPuits":
+                    // Import de puits
                     new ImportPuitsServlet().doPost(request, response);
                     break;
                 case "/importDelaiOpr":
+                    // Import des délais d'opération
                     new ImportDelaiOprServlet().doPost(request, response);
                     break;
                 case "/importJournalDelai":
+                    // Import du journal des délais
                     new ImportJournalDelaiServlet().doPost(request, response);
                     break;
                 case "/importCoutOpr":
+                    // Import des coûts d'opération
                     new ImportCoutOprServlet().doPost(request, response);
                     break;
                 case "/importJournalQualite":
+                    // Import du journal de qualité
                     new ImportJournalQualiteServlet().doPost(request, response);
                     break;
                 case "/importDrillingParameters":
+                    // Import des paramètres de forage
                     new ImportDrillingParametersServlet().doPost(request, response);
                     break;
                 default:
+                    // Méthode non autorisée
                     response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
             }
         } catch (Exception e) {
@@ -192,6 +232,9 @@ public class FrontController extends HttpServlet {
         }
     }
 
+    /**
+     * Récupère et affiche les derniers paramètres de forage
+     */
     private void handleDrillingParameters(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
@@ -203,6 +246,9 @@ public class FrontController extends HttpServlet {
         }
     }
 
+    /**
+     * Affiche la liste des utilisateurs
+     */
     private void handleListUsers(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
@@ -218,8 +264,8 @@ public class FrontController extends HttpServlet {
     }
 
     /**
-     * Gestion spécifique pour les uploads depuis React
-     * Cette méthode traite les fichiers Excel et appelle les parsers appropriés
+     * Gère l'upload de fichiers Excel depuis React
+     * Traite les fichiers et appelle les parsers appropriés
      */
     private void handleReactExcelUpload(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -228,6 +274,7 @@ public class FrontController extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
 
         try {
+            // Vérification du type de contenu
             if (!request.getContentType().startsWith("multipart/form-data")) {
                 throw new ServletException("Form must be multipart/form-data");
             }
@@ -246,12 +293,13 @@ public class FrontController extends HttpServlet {
             System.out.println("- Date: " + date);
             System.out.println("- Problems: " + problemsJson);
 
-            // Récupération des fichiers
+            // Récupération des fichiers uploadés
             Collection<Part> fileParts = request.getParts();
             if (fileParts.isEmpty()) {
                 throw new ServletException("No files uploaded");
             }
 
+            // Création du répertoire d'upload si inexistant
             String uploadPath = getServletContext().getRealPath("") + File.separator + UPLOAD_DIRECTORY;
             File uploadDir = new File(uploadPath);
             if (!uploadDir.exists()) {
@@ -266,10 +314,12 @@ public class FrontController extends HttpServlet {
                 if (filePart.getName().equals("excelFile") && filePart.getSize() > 0) {
                     String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
 
+                    // Ignorer les fichiers non Excel
                     if (!fileName.toLowerCase().endsWith(".xlsx") && !fileName.toLowerCase().endsWith(".xls")) {
-                        continue; // Skip non-Excel files
+                        continue;
                     }
 
+                    // Sauvegarde du fichier
                     String filePath = uploadPath + File.separator + System.currentTimeMillis() + "_" + fileName;
                     filePart.write(filePath);
 
@@ -277,11 +327,11 @@ public class FrontController extends HttpServlet {
                     fileResult.put("fileName", fileName);
                     fileResult.put("filePath", filePath);
 
-                    // Définir deux chemins JSON distincts
+                    // Chemins pour les fichiers JSON de sortie
                     String drillingJsonPath = uploadPath + File.separator + System.currentTimeMillis() + "_drilling_result.json";
                     String excelJsonPath = uploadPath + File.separator + System.currentTimeMillis() + "_cost_result.json";
 
-                    // Variables pour stocker les résultats des deux parsers
+                    // Variables pour les résultats des parsers
                     JSONObject drillingResult = null;
                     JSONObject excelResult = null;
                     boolean drillingSuccess = false;
@@ -289,7 +339,7 @@ public class FrontController extends HttpServlet {
                     String drillingError = null;
                     String costError = null;
 
-                    // Parser drilling (séparé)
+                    // Parser pour les données de forage
                     try {
                         System.out.println("[DEBUG] Starting drilling parser for: " + fileName);
                         drillingResult = drillingReportParserEJB.importDrillingReport(filePath);
@@ -301,7 +351,7 @@ public class FrontController extends HttpServlet {
                         drillingException.printStackTrace();
                     }
 
-                    // Parser daily cost (séparé)
+                    // Parser pour les coûts journaliers
                     try {
                         System.out.println("[DEBUG] Starting daily cost parser for: " + fileName);
                         System.out.println("[DEBUG] Excel JSON path: " + excelJsonPath);
@@ -314,17 +364,17 @@ public class FrontController extends HttpServlet {
                         costException.printStackTrace();
                     }
 
-                    // Configuration des résultats dans fileResult
+                    // Remplissage des résultats
                     fileResult.put("drillingData", drillingResult);
                     fileResult.put("dailyCostData", excelResult);
                     fileResult.put("drillingJsonPath", drillingJsonPath);
                     fileResult.put("excelJsonPath", excelJsonPath);
 
-                    // Informations détaillées sur le succès de chaque parser
+                    // Statuts des parsers
                     fileResult.put("drillingSuccess", drillingSuccess);
                     fileResult.put("costSuccess", costSuccess);
 
-                    // Erreurs détaillées si présentes
+                    // Messages d'erreur
                     if (drillingError != null) {
                         fileResult.put("drillingError", drillingError);
                     }
@@ -332,23 +382,24 @@ public class FrontController extends HttpServlet {
                         fileResult.put("costError", costError);
                     }
 
-                    // Succès global : au moins un des deux parsers doit réussir
+                    // Succès global (au moins un parser a réussi)
                     boolean overallSuccess = drillingSuccess || costSuccess;
                     fileResult.put("success", overallSuccess);
 
+                    // Détermination du type de résultat
                     if (overallSuccess) {
                         if (drillingSuccess && costSuccess) {
-                            fileResult.put("type", "combined"); // Les deux ont réussi
+                            fileResult.put("type", "combined");
                             System.out.println("[DEBUG] Both drilling and daily cost parsing completed for: " + fileName);
                         } else if (drillingSuccess) {
-                            fileResult.put("type", "drilling_only"); // Seul drilling a réussi
+                            fileResult.put("type", "drilling_only");
                             System.out.println("[DEBUG] Only drilling parsing completed for: " + fileName);
                         } else {
-                            fileResult.put("type", "cost_only"); // Seul daily cost a réussi
+                            fileResult.put("type", "cost_only");
                             System.out.println("[DEBUG] Only daily cost parsing completed for: " + fileName);
                         }
                     } else {
-                        fileResult.put("type", "failed"); // Aucun n'a réussi
+                        fileResult.put("type", "failed");
                         System.out.println("[DEBUG] Both parsers failed for: " + fileName);
                     }
 
@@ -356,7 +407,7 @@ public class FrontController extends HttpServlet {
                 }
             }
 
-            // Vérification du succès global
+            // Vérification des résultats globaux
             boolean hasSuccessfulFiles = false;
             boolean hasErrors = false;
 
@@ -369,6 +420,7 @@ public class FrontController extends HttpServlet {
                 }
             }
 
+            // Construction de la réponse finale
             finalResult.put("success", hasSuccessfulFiles);
             if (hasSuccessfulFiles && hasErrors) {
                 finalResult.put("message", "Files processed with some errors - check individual file results");
@@ -379,6 +431,7 @@ public class FrontController extends HttpServlet {
             }
             finalResult.put("files", processedFiles);
 
+            // Envoi de la réponse
             PrintWriter out = response.getWriter();
             out.print(finalResult.toString());
             out.flush();
@@ -390,7 +443,7 @@ public class FrontController extends HttpServlet {
     }
 
     /**
-     * Méthode utilitaire pour envoyer les erreurs en format JSON
+     * Envoie une erreur au format JSON
      */
     private void sendJsonError(HttpServletResponse response, String message) throws IOException {
         response.setContentType("application/json");
@@ -407,18 +460,21 @@ public class FrontController extends HttpServlet {
     }
 
     /**
-     * Méthode existante pour les uploads JSP (conservée pour compatibilité)
+     * Gère l'upload de fichiers Excel depuis un formulaire standard (JSP)
      */
     private void handleExcelUpload(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
+            // Vérification du type de contenu
             if (!request.getContentType().startsWith("multipart/form-data")) {
                 throw new ServletException("Form must be multipart/form-data");
             }
 
+            // Récupération du fichier
             Part filePart = request.getPart("excelFile");
             String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
 
+            // Validation du fichier
             if (fileName == null || fileName.isEmpty()) {
                 throw new ServletException("No file selected");
             }
@@ -427,26 +483,27 @@ public class FrontController extends HttpServlet {
                 throw new ServletException("Only .xlsx and .xls files are allowed");
             }
 
+            // Création du répertoire d'upload
             String uploadPath = getServletContext().getRealPath("") + File.separator + UPLOAD_DIRECTORY;
             File uploadDir = new File(uploadPath);
             if (!uploadDir.exists()) {
                 uploadDir.mkdirs();
             }
 
+            // Sauvegarde du fichier
             String filePath = uploadPath + File.separator + fileName;
             filePart.write(filePath);
 
+            // Chemins pour les fichiers JSON de sortie
             String jsonOutputPath = uploadPath + File.separator + System.currentTimeMillis() + "_result.json";
-
-            // Définir deux chemins JSON distincts
             String drillingJsonPath = jsonOutputPath.replace(".json", "_drilling.json");
             String excelJsonPath = jsonOutputPath.replace(".json", "_couts.json");
 
-            // Appel des deux parsers drilling et couts
+            // Appel des parsers
             JSONObject drillingResult = drillingReportParserEJB.importDrillingReport(filePath);
             JSONObject excelResult = ExcelDailyCostParser.extractDailyCostData(filePath, excelJsonPath);
 
-            // Configuration des attributs pour les deux résultats
+            // Configuration des attributs de requête
             request.setAttribute("drillingResult", drillingResult);
             request.setAttribute("excelResult", excelResult);
             request.setAttribute("drillingJsonPath", drillingJsonPath);
@@ -455,33 +512,39 @@ public class FrontController extends HttpServlet {
             request.setAttribute("jsonString", drillingResult.toString());
             request.setAttribute("excelData", excelResult);
 
-            // Redirection vers une page qui peut traiter les deux types de résultats
-            // JSP qui gère les deux types
+            // Redirection vers la page de résultats
             request.getRequestDispatcher("/combined-result.jsp").forward(request, response);
         } catch (Exception e) {
             throw new ServletException("Error processing Excel file: " + e.getMessage(), e);
         }
     }
 
+    /**
+     * Gère le téléchargement d'un fichier JSON
+     */
     private void handleDownloadJson(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
+            // Récupération du chemin du fichier
             String filePath = request.getParameter("filePath");
             if (filePath == null || filePath.isEmpty()) {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing filePath parameter");
                 return;
             }
 
+            // Vérification de l'existence du fichier
             File file = new File(filePath);
             if (!file.exists()) {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, "JSON file not found");
                 return;
             }
 
+            // Configuration de la réponse
             response.setContentType("application/json");
             response.setHeader("Content-Disposition",
                     "attachment; filename=\"export_" + System.currentTimeMillis() + ".json\"");
 
+            // Envoi du fichier
             try (InputStream in = new FileInputStream(file);
                  OutputStream out = response.getOutputStream()) {
                 byte[] buffer = new byte[4096];
@@ -495,8 +558,9 @@ public class FrontController extends HttpServlet {
         }
     }
 
-
-
+    /**
+     * Récupère les rapports avec filtres optionnels
+     */
     private void handleGetReports(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("application/json");
@@ -509,11 +573,13 @@ public class FrontController extends HttpServlet {
         String operationParam = request.getParameter("operation");    // Ex: Nettoyage
 
         try {
+            // Récupération de tous les fichiers de forage
             List<FICHIER_DRILLING> fichiers = fichierDrillingDAO.findAll();
             JSONArray jsonArray = new JSONArray();
 
+            // Traitement de chaque fichier
             for (FICHIER_DRILLING fichier : fichiers) {
-                // --- Filtrage par dateUpload (champ de la table)
+                // Filtrage par date d'upload
                 if (dateParam != null && !dateParam.isEmpty()) {
                     String dateUploadStr = fichier.getDateUpload().toString();
                     if (!dateUploadStr.equals(dateParam)) {
@@ -521,20 +587,20 @@ public class FrontController extends HttpServlet {
                     }
                 }
 
-                // Préparer l'objet JSON résultat
+                // Préparation de l'objet JSON résultat
                 JSONObject obj = new JSONObject();
                 obj.put("id", fichier.getId());
                 obj.put("filename", fichier.getNomFichier());
                 obj.put("dateUpload", fichier.getDateUpload().toString());
 
                 String jsonData = fichier.getJsonData();
-                boolean skip = false; // indicateur si on doit ignorer ce fichier
+                boolean skip = false; // indicateur pour ignorer ce fichier
 
                 if (jsonData != null && !jsonData.isEmpty()) {
                     try {
                         JSONObject jsonParsed = new JSONObject(jsonData);
 
-                        // Extraire les informations depuis header
+                        // Extraction des informations depuis l'en-tête
                         String dateRapport = "";
                         String nomPuits = "";
                         String profondeurStr = "";
@@ -542,17 +608,17 @@ public class FrontController extends HttpServlet {
                         if (jsonParsed.has("header")) {
                             JSONObject header = jsonParsed.getJSONObject("header");
 
-                            // Date du rapport depuis header.report_date
+                            // Date du rapport
                             dateRapport = header.optString("report_date", "N/A");
 
-                            // Nom du puits depuis header.well_name
+                            // Nom du puits
                             nomPuits = header.optString("well_name", "");
 
-                            // Profondeur depuis header.depth_24h_ft
+                            // Profondeur
                             profondeurStr = header.optString("depth_24h_ft", "");
                         }
 
-                        // --- Filtres : profondeur, puits
+                        // Filtres : profondeur et puits
                         if (profondeurParam != null && !profondeurParam.isEmpty()) {
                             if (!profondeurStr.equals(profondeurParam)) {
                                 skip = true;
@@ -565,7 +631,7 @@ public class FrontController extends HttpServlet {
                             }
                         }
 
-                        // --- Filtres : opération (dernière opération non vide)
+                        // Filtre : opération
                         String derniereOperation = "";
                         if (operationParam != null && !operationParam.isEmpty()) {
                             boolean operationFound = false;
@@ -573,7 +639,7 @@ public class FrontController extends HttpServlet {
                             if (jsonParsed.has("operations") && jsonParsed.getJSONObject("operations").has("operations")) {
                                 JSONArray operations = jsonParsed.getJSONObject("operations").getJSONArray("operations");
 
-                                // Chercher la dernière opération non vide
+                                // Recherche de la dernière opération non vide
                                 for (int i = operations.length() - 1; i >= 0; i--) {
                                     JSONObject operation = operations.getJSONObject(i);
                                     String code = operation.optString("code", "").trim();
@@ -582,7 +648,7 @@ public class FrontController extends HttpServlet {
                                     if (!code.isEmpty() || !description.isEmpty()) {
                                         derniereOperation = code + (description.isEmpty() ? "" : " - " + description);
 
-                                        // Vérifier si l'opération correspond au filtre
+                                        // Vérification du filtre
                                         if (code.toLowerCase().contains(operationParam.toLowerCase()) ||
                                                 description.toLowerCase().contains(operationParam.toLowerCase())) {
                                             operationFound = true;
@@ -595,14 +661,14 @@ public class FrontController extends HttpServlet {
                                     skip = true;
                                 }
                             } else {
-                                skip = true; // pas d'opérations du tout
+                                skip = true; // pas d'opérations
                             }
                         } else {
-                            // Si pas de filtre opération, récupérer quand même la dernière opération pour l'affichage
+                            // Récupération de la dernière opération pour affichage
                             if (jsonParsed.has("operations") && jsonParsed.getJSONObject("operations").has("operations")) {
                                 JSONArray operations = jsonParsed.getJSONObject("operations").getJSONArray("operations");
 
-                                // Chercher la dernière opération non vide
+                                // Recherche de la dernière opération non vide
                                 for (int i = operations.length() - 1; i >= 0; i--) {
                                     JSONObject operation = operations.getJSONObject(i);
                                     String code = operation.optString("code", "").trim();
@@ -616,7 +682,7 @@ public class FrontController extends HttpServlet {
                             }
                         }
 
-                        // Si on a décidé de skip, on passe au fichier suivant
+                        // Ignorer ce fichier si nécessaire
                         if (skip) continue;
 
                         // Ajout des informations extraites
@@ -625,7 +691,7 @@ public class FrontController extends HttpServlet {
                         obj.put("puits", nomPuits);
                         obj.put("derniereOperation", derniereOperation);
 
-                        // Ajouter des informations supplémentaires depuis mud_information si disponibles
+                        // Ajout d'informations supplémentaires sur la boue
                         if (jsonParsed.has("mud_information")) {
                             JSONObject mudInfo = jsonParsed.getJSONObject("mud_information");
 
@@ -634,11 +700,7 @@ public class FrontController extends HttpServlet {
                                 JSONObject volumes = mudInfo.getJSONObject("VOLUMES_BBL");
                                 obj.put("boueActive", volumes.optString("ACTIVE", "N/A"));
                             }
-
-
                         }
-
-
 
                     } catch (Exception e) {
                         obj.put("error_parsing_jsonData", e.getMessage());
@@ -651,6 +713,7 @@ public class FrontController extends HttpServlet {
                 jsonArray.put(obj);
             }
 
+            // Envoi de la réponse
             response.getWriter().write(jsonArray.toString());
 
         } catch (Exception e) {
@@ -660,5 +723,4 @@ public class FrontController extends HttpServlet {
             response.getWriter().write(error.toString());
         }
     }
-
 }

@@ -15,11 +15,20 @@ import java.util.logging.Logger;
 @Stateless
 public class FichierDrillingDAO {
 
+    /**
+     * Logger pour le suivi des opérations et des erreurs
+     */
     private static final Logger logger = Logger.getLogger(FichierDrillingDAO.class.getName());
 
+    /**
+     * EntityManager injecté pour les opérations de persistance
+     */
     @PersistenceContext(unitName = "myPU")
     private EntityManager em;
 
+    /**
+     * Sauvegarde un fichier drilling dans la base de données
+     */
     public void save(FICHIER_DRILLING fichier) {
         try {
             logger.log(Level.INFO, "Tentative de sauvegarde du fichier: {0}", fichier.getNomFichier());
@@ -32,10 +41,18 @@ public class FichierDrillingDAO {
         }
     }
 
+    /**
+     * Recherche un fichier drilling par son identifiant
+     * @return L'entité FICHIER_DRILLING correspondante ou null si non trouvée
+     */
     public FICHIER_DRILLING findById(Long id) {
         return em.find(FICHIER_DRILLING.class, id);
     }
 
+    /**
+     * Récupère la liste complète des fichiers drillings
+     * @return Une liste de toutes les entités FICHIER_DRILLING
+     */
     public List<FICHIER_DRILLING> findAll() {
         return em.createQuery("SELECT f FROM FICHIER_DRILLING f", FICHIER_DRILLING.class)
                 .getResultList();

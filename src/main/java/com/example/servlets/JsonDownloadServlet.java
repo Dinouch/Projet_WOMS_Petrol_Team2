@@ -10,6 +10,15 @@ import java.io.*;
 
 @WebServlet("/download-json")
 public class JsonDownloadServlet extends HttpServlet {
+
+    /**
+     * Gère les requêtes GET pour le téléchargement de fichiers JSON :
+     * - Vérifie la présence du paramètre filePath dans la requête
+     * - Contrôle l'existence du fichier demandé
+     * - Configure les en-têtes de réponse pour forcer le téléchargement
+     * - Transfère le contenu du fichier JSON vers le flux de sortie de la réponse
+     * - Gère les erreurs (paramètre manquant, fichier introuvable)
+     */
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
