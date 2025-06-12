@@ -135,6 +135,8 @@ public class ImportDelaiOprServlet extends HttpServlet {
                 }
 
                 delaiOpr.setStatutDelai(null); // Valeur null comme spécifié
+                // Les autres champs sont laissés à null comme spécifié
+                delaiOpr.setDureepr(null);
 
                 // 5. Sauvegarde
                 delaiOprDAO.create(delaiOpr);
