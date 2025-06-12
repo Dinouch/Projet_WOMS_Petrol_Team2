@@ -17,6 +17,9 @@
 =======
                <li><a href="#" onclick="importDrillingParameters()">Importer les paramètres de forage</a></li>
                <li><a href="#" onclick="coutAlerts()">alerte cout</a></li>
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
         </ul>
     </nav>
@@ -49,6 +52,9 @@
         .catch(error => alert('Erreur: ' + error));
     }
 
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
         function importJson() {
             fetch('importJson', {
