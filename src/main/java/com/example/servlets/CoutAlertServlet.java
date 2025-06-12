@@ -52,3 +52,4 @@ public class CoutAlertServlet extends HttpServlet {
         response.getWriter().write(gson.toJson(jsonResponse));
     }
 }
+
