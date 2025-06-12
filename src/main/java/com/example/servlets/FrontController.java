@@ -204,10 +204,6 @@ public class FrontController extends HttpServlet {
                     // Import des délais d'opération
                     new ImportDelaiOprServlet().doPost(request, response);
                     break;
-                case "/importJournalDelai":
-                    // Import du journal des délais
-                    new ImportJournalDelaiServlet().doPost(request, response);
-                    break;
                 case "/importCoutOpr":
                     // Import des coûts d'opération
                     new ImportCoutOprServlet().doPost(request, response);
