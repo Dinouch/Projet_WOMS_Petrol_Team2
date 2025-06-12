@@ -3,6 +3,7 @@ package com.example.servlets;
 import com.example.dao.DelaiOprDAO;
 import com.example.entities.DelaiOpr;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 import jakarta.inject.Inject;
@@ -36,6 +37,8 @@ public class DelaiAlertServlet extends HttpServlet {
         int totalToMonitor = monitorDelays.size();
 
         // Construire l'objet JSON
+
+
         Gson gson = new Gson();
         JsonObject jsonResponse = new JsonObject();
 
@@ -48,7 +51,15 @@ public class DelaiAlertServlet extends HttpServlet {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
+        for (DelaiOpr d : monitorDelays) {
+            System.out.println("id: " + d.getIdDelaiOpr() + ", dureepr: " + d.getDureepr());
+        }
+
         // Envoyer la réponse JSON
         response.getWriter().write(gson.toJson(jsonResponse));
+
+
+
+
     }
 }
