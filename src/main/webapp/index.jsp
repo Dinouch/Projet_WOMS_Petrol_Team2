@@ -18,6 +18,9 @@
                <li><a href="#" onclick="importDrillingParameters()">Importer les paramètres de forage</a></li>
                <li><a href="#" onclick="coutAlerts()">alerte cout</a></li>
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
@@ -53,6 +56,9 @@
     }
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes

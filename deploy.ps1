@@ -2,7 +2,11 @@
 param (
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     [string]$projectPath = "D:\downloads\Moi\me\Projet_WOMS_Petrol_Team2",
+=======
+    [string]$projectPath = "D:\downloads\Moi\me\projets\back_wows\Projet_WOMS_Petrol_Team2",
+>>>>>>> Stashed changes
 =======
     [string]$projectPath = "D:\downloads\Moi\me\projets\back_wows\Projet_WOMS_Petrol_Team2",
 >>>>>>> Stashed changes
