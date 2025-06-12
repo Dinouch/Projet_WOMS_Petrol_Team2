@@ -3,6 +3,8 @@ package com.example.entities;
 import jakarta.persistence.*;
 import java.sql.Time;
 import java.util.Date;
+import java.time.Duration;
+import java.time.LocalTime;
 
 @Entity
 @Table(name = "DELAI_OPR")
@@ -22,13 +24,15 @@ public class DelaiOpr {
     @Column(name = "end_time")
     private Time endTime;
 
+    @Column(name = "duree_pr") // New column for planned duration
+    private String dureePr;
+
     @Column(name = "statut_delai")
     private String statutDelai;
 
-
     @Column(name = "date_creation")
     @Temporal(TemporalType.DATE)
-    private Date date_creation;
+    private Date dateCreation;
 
     @Column(name = "profondeur")
     private String profondeur;
@@ -45,11 +49,54 @@ public class DelaiOpr {
     @Column(name = "cumulative_npt")
     private String cumulativeNpt;
 
-
     private String nom_puit;
 
-    // Constructeur par défaut
+    // Constructors
     public DelaiOpr() {
+    }
+
+    // Business method to calculate and set status based on duration comparison
+    @PrePersist
+    @PreUpdate
+    public void calculateStatus() {
+        if (startTime != null && endTime != null && dureePr != null) {
+            // Calculate actual duration
+            LocalTime start = startTime.toLocalTime();
+            LocalTime end = endTime.toLocalTime();
+            Duration actualDuration = Duration.between(start, end);
+
+
+            Duration plannedDuration = parseDuration(dureePr);
+
+
+            long diffMinutes = actualDuration.minus(plannedDuration).toMinutes();
+
+            if (diffMinutes == 0) {
+                statutDelai = "Sous Contrôle";
+            }
+            else if (diffMinutes > 0) { // Si durée réelle > durée prévue
+                if (diffMinutes <= 30) { // Différence petite
+                    statutDelai = "A Surveiller";
+                } else { // Différence grande
+                    statutDelai = "Dépassement";
+                }
+            }
+            else { // Si durée réelle < durée prévue (diffMinutes négatif)
+                if (diffMinutes >= -30) { // Différence petite
+                    statutDelai = "A Surveiller";
+                } else { // Différence grande
+                    statutDelai = "Avance";
+                }
+            }
+        }
+    }
+
+
+    public Duration parseDuration(String durationStr) {
+        String[] parts = durationStr.split("h");
+        int hours = Integer.parseInt(parts[0]);
+        int minutes = parts.length > 1 ? Integer.parseInt(parts[1]) : 0;
+        return Duration.ofHours(hours).plusMinutes(minutes);
     }
 
     // Getters and Setters
@@ -85,6 +132,14 @@ public class DelaiOpr {
         this.endTime = endTime;
     }
 
+    public String getDureePr() {
+        return dureePr;
+    }
+
+    public void setDureePr(String dureePr) {
+        this.dureePr = dureePr;
+    }
+
     public String getStatutDelai() {
         return statutDelai;
     }
@@ -93,13 +148,12 @@ public class DelaiOpr {
         this.statutDelai = statutDelai;
     }
 
-
-    public Date getDate() {
-        return date_creation;
+    public Date getDateCreation() {
+        return dateCreation;
     }
 
-    public void setDate(Date date) {
-        this.date_creation = date;
+    public void setDateCreation(Date dateCreation) {
+        this.dateCreation = dateCreation;
     }
 
     public String getProfondeur() {
@@ -149,5 +203,4 @@ public class DelaiOpr {
     public void setNom_puit(String nom_puit) {
         this.nom_puit = nom_puit;
     }
-
 }

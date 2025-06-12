@@ -15,6 +15,9 @@
         <class>com.example.entities.CoutOpr</class>
         <class>com.example.entities.Journal_qualite</class>
         <class>com.example.entities.DRILLING_PARAMETERS</class>
+        <class>com.example.entities.PrevisionJR</class>
+        <class>com.example.entities.OperationPrevue</class>
+
         <properties>
             <!-- Configuration Oracle -->
             <property name="jakarta.persistence.jdbc.driver" value="oracle.jdbc.OracleDriver"/>
