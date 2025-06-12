@@ -2127,7 +2127,7 @@ public class DrillingReportParser {
             // Save to JSON file if path is provided
             if (jsonOutputPath != null && !jsonOutputPath.isEmpty()) {
                 try {
-                    // Use the full path directly for the output directory
+                    // Use relative path from the project root
                     String outputDirectory = "C:\\Users\\dinap\\OneDrive\\Bureau\\ESI\\2CS\\S2\\Projet 2CS\\test\\test_j2ee\\src\\main\\webapp\\WEB-INF\\data";
 
                     // Extract just the filename from the jsonOutputPath

@@ -27,6 +27,10 @@ public class FICHIER_DRILLING {
     @Column(name = "JSON_DATA")
     private String jsonData;
 
+    @Lob
+    @Column(name = "JSON_COST_DATA")
+    private String jsonCostData;
+
     // Getters et setters
     public Long getId() {
         return id;
@@ -66,5 +70,13 @@ public class FICHIER_DRILLING {
 
     public void setJsonData(String jsonData) {
         this.jsonData = jsonData;
+    }
+
+    public String getJsonCostData() {
+        return jsonCostData;
+    }
+
+    public void setJsonCostData(String jsonData) {
+        this.jsonCostData = jsonCostData;
     }
 }

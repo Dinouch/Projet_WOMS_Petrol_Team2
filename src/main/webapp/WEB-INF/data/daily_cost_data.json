@@ -1,393 +1,448 @@
 {
     "daily_cost": {
+        "DETAIL OF CONTRACT SERVICES/EQUIPMENT PROVIDED": {
+            "items": [],
+            
+            "total": ""
+            
+        },
+        
         "DRILLING RIG  - ENTP": {
             "items": [
                 {
-                    "description": "Operating Rate",
-                    "lump_sum_day_rate": "1479",
                     "unit": "$",
-                    "discount": "",
-                    "quantity": "22.5",
-                    "daily_cost": "33281"
-                },
-                {
-                    "description": "Stand-by Rate",
-                    "lump_sum_day_rate": "1331",
-                    "unit": "$",
-                    "discount": "",
-                    "quantity": "1.5",
-                    "daily_cost": "1997"
-                },
-                {
-                    "description": "Reduced Performance Rate",
-                    "lump_sum_day_rate": "961",
-                    "unit": "$",
-                    "discount": "",
-                    "quantity": "",
-                    "daily_cost": "0"
-                },
-                {
-                    "description": "Force Majeur Rate",
-                    "lump_sum_day_rate": "888",
-                    "unit": "$",
-                    "discount": "",
-                    "quantity": "",
-                    "daily_cost": "0"
-                },
-                {
-                    "description": "Stacked Rate",
-                    "lump_sum_day_rate": "",
-                    "unit": "",
-                    "discount": "",
                     "quantity": "24",
+                    "description": "Operating Rate",
+                    "discount": "",
+                    "lump_sum_day_rate": "1479.16",
+                    "daily_cost": "35499.840000000004"
+                },
+                {
+                    "unit": "$",
+                    "quantity": "",
+                    "description": "Stand-by Rate",
+                    "discount": "",
+                    "lump_sum_day_rate": "1331.25",
+                    "daily_cost": "0"
+                },
+                {
+                    "unit": "$",
+                    "quantity": "",
+                    "description": "Reduced Performance Rate",
+                    "discount": "",
+                    "lump_sum_day_rate": "961.45",
+                    "daily_cost": "0"
+                },
+                {
+                    "unit": "$",
+                    "quantity": "",
+                    "description": "Force Majeur Rate",
+                    "discount": "",
+                    "lump_sum_day_rate": "887.5",
+                    "daily_cost": "0"
+                },
+                {
+                    "unit": "",
+                    "quantity": "24.0",
+                    "description": "Stacked Rate",
+                    "discount": "",
+                    "lump_sum_day_rate": "",
                     "daily_cost": ""
                 }
             ],
+            
             "total": ""
+            
         },
+        
         "ADDITIONAL SERVICES": {
-            "items": [
-                {
-                    "description": "Additional Catering (> 12 persons )",
-                    "lump_sum_day_rate": "60",
-                    "unit": "DR",
-                    "discount": "x person",
-                    "quantity": "15",
-                    "daily_cost": "900"
-                }
-            ],
-            "total": 36177.975
+            "items": [{
+                "unit": "DR",
+                "quantity": "19",
+                "description": "Additional Catering (> 12 persons )",
+                "discount": "x person",
+                "lump_sum_day_rate": "60",
+                "daily_cost": "1140"
+            }],
+            
+            "total": "36639.840000000004"
+            
         },
+        
         "MUD LOGGING -  WEATHERFORD": {
             "items": [
                 {
-                    "description": "Daily Operating Rate",
-                    "lump_sum_day_rate": "1665",
                     "unit": "$",
-                    "discount": "",
                     "quantity": "1",
-                    "daily_cost": "1665"
+                    "description": "Daily Operating Rate",
+                    "discount": "",
+                    "lump_sum_day_rate": "1664.7",
+                    "daily_cost": "1664.7"
                 },
                 {
-                    "description": "Daily Stand by Rate",
-                    "lump_sum_day_rate": "200",
                     "unit": "$",
-                    "discount": "",
                     "quantity": "",
+                    "description": "Daily Stand by Rate",
+                    "discount": "",
+                    "lump_sum_day_rate": "200",
                     "daily_cost": "0"
                 },
                 {
-                    "description": "Mobilization unit MUD LOGGING",
-                    "lump_sum_day_rate": "",
                     "unit": "",
-                    "discount": "",
                     "quantity": "",
+                    "description": "Mobilization unit MUD LOGGING",
+                    "discount": "",
+                    "lump_sum_day_rate": "",
                     "daily_cost": ""
                 }
             ],
-            "total": 1664.7
+            
+            "total": "1664.7"
+            
         },
+        
         "DOWNHOLE RENTAL TOOLS  - WEATHERFORD": {
             "items": [
                 {
-                    "description": "Drilling Jar 8” OD X 3” ID Lump Sum Charge",
-                    "lump_sum_day_rate": "3510",
                     "unit": "$",
-                    "discount": "",
                     "quantity": "",
+                    "description": "Lump sum use of 9 1/2 SHOCK SUB  TO DRILL 26\" HOLE SECTION",
+                    "discount": "",
+                    "lump_sum_day_rate": "3510",
+                    "daily_cost": "0"
+                },
+                {
+                    "unit": "",
+                    "quantity": "",
+                    "description": "transport shock sub to the rig site",
+                    "discount": "",
+                    "lump_sum_day_rate": "5000",
                     "daily_cost": "0"
                 }
             ],
-            "total": 0.0
+            
+            "total": "0"
+            
         },
+        
         "DRILLING MUD  - NOS": {
             "items": [
                 {
-                    "description": "Service Cost = senior mud eng. + mud eng. + mud lab =320+270+70=",
-                    "lump_sum_day_rate": "660",
                     "unit": "$",
-                    "discount": "",
                     "quantity": "1",
+                    "description": "Service Cost = senior mud eng. + mud eng. + mud lab =320+270+70=",
+                    "discount": "",
+                    "lump_sum_day_rate": "660",
                     "daily_cost": "660"
                 },
                 {
-                    "description": "Product cost",
-                    "lump_sum_day_rate": "18789",
                     "unit": "$",
-                    "discount": "",
                     "quantity": "1",
-                    "daily_cost": "18789"
+                    "description": "Product cost",
+                    "discount": "",
+                    "lump_sum_day_rate": "15774",
+                    "daily_cost": "15774"
                 },
                 {
-                    "description": "Mud lab transportation",
-                    "lump_sum_day_rate": "",
                     "unit": "$",
-                    "discount": "",
                     "quantity": "",
+                    "description": "Mud lab transportation",
+                    "discount": "",
+                    "lump_sum_day_rate": "",
                     "daily_cost": ""
                 }
             ],
-            "total": 19449.0
+            
+            "total": "16434"
+            
         },
+        
         "SOLID CONTROL - NOS": {
             "items": [
                 {
-                    "description": "operators service cost",
-                    "lump_sum_day_rate": "270",
                     "unit": "$",
-                    "discount": "",
                     "quantity": "1",
+                    "description": "operators service cost",
+                    "discount": "",
+                    "lump_sum_day_rate": "270",
                     "daily_cost": "270"
                 },
                 {
-                    "description": "centrifuge operating",
-                    "lump_sum_day_rate": "300",
                     "unit": "$",
-                    "discount": "",
                     "quantity": "1",
+                    "description": "centrifuge operating",
+                    "discount": "",
+                    "lump_sum_day_rate": "300",
                     "daily_cost": "300"
                 },
                 {
-                    "description": "centrifuge stand by",
-                    "lump_sum_day_rate": "150",
                     "unit": "$",
-                    "discount": "",
                     "quantity": "",
+                    "description": "centrifuge stand by",
+                    "discount": "",
+                    "lump_sum_day_rate": "150",
                     "daily_cost": "0"
                 }
             ],
-            "total": 20019.0
+            
+            "total": "17004"
+            
         },
+        
         "WELL  HEAD  MSP DRILEX": {
             "items": [
                 {
-                    "description": "Csg Head Housing 13\"5/8*3000 SliponLock MSP/DRILEX",
-                    "lump_sum_day_rate": "8063",
                     "unit": "$",
+                    "quantity": "",
+                    "description": "TUBING HEAD 11\".5000x 7 1/16.5000",
                     "discount": "",
-                    "quantity": "1",
-                    "daily_cost": "8063"
+                    "lump_sum_day_rate": "8411",
+                    "daily_cost": "0"
+                },
+                {
+                    "unit": "$",
+                    "quantity": "",
+                    "description": "XMASTREE 7 1/16.5000x 4 1/16.5000",
+                    "discount": "",
+                    "lump_sum_day_rate": "21629",
+                    "daily_cost": "0"
+                },
+                {
+                    "unit": "$",
+                    "quantity": "",
+                    "description": "Set Bridge Plug @ 5855'",
+                    "discount": "",
+                    "lump_sum_day_rate": "20279.4",
+                    "daily_cost": "0"
+                },
+                {
+                    "unit": "$",
+                    "quantity": "",
+                    "description": "GR-CCL (Correlation:13/05/2013)",
+                    "discount": "",
+                    "lump_sum_day_rate": "27379.2",
+                    "daily_cost": "0"
+                },
+                {
+                    "unit": "$",
+                    "quantity": "",
+                    "description": "Set Bridge Plug @ 7948'",
+                    "discount": "",
+                    "lump_sum_day_rate": "29153.76",
+                    "daily_cost": "0"
                 }
             ],
-            "total": 8063.0
+            
+            "total": "0"
+            
         },
+        
         "COMMUNICATION AND DATA": {
-            "items": [
-                {
-                    "description": "VSAT rental",
-                    "lump_sum_day_rate": "120",
-                    "unit": "$",
-                    "discount": "",
-                    "quantity": "1",
-                    "daily_cost": "120"
-                }
-            ],
-            "total": 120.0
+            "items": [{
+                "unit": "",
+                "quantity": "1",
+                "description": "VSAT rental",
+                "discount": "",
+                "lump_sum_day_rate": "120",
+                "daily_cost": "120"
+            }],
+            
+            "total": "120"
+            
         },
+        
         "CASING": {
-            "items": [
-                {
-                    "description": "74 JOINTS 13\"3/8 Casing 61# J55 BTC (   838.36 m).",
-                    "lump_sum_day_rate": "176",
-                    "unit": "$",
-                    "discount": "",
-                    "quantity": "",
-                    "daily_cost": "0"
-                },
-                {
-                    "description": "Casing Transport",
-                    "lump_sum_day_rate": "15815",
-                    "unit": "$",
-                    "discount": "",
-                    "quantity": "",
-                    "daily_cost": "0"
-                }
-            ],
-            "total": 0.0
+            "items": [{
+                "unit": "$",
+                "quantity": "",
+                "description": "7 JOINTS CASING 20\" 94 # J55 BTC ( 81.88m )",
+                "discount": "",
+                "lump_sum_day_rate": "380",
+                "daily_cost": "0"
+            }],
+            
+            "total": "0"
+            
         },
+        
         "CASING ACCESSORIES - WEATHERFORD": {
-            "items": [
-                {
-                    "description": "13\"3/8 Casing Float Shoe & Float Collar",
-                    "lump_sum_day_rate": "4167",
-                    "unit": "$",
-                    "discount": "",
-                    "quantity": "",
-                    "daily_cost": "0"
-                },
-                {
-                    "description": "13\"3/8 Top & Bottom Plug",
-                    "lump_sum_day_rate": "1875",
-                    "unit": "$",
-                    "discount": "",
-                    "quantity": "",
-                    "daily_cost": "0"
-                },
-                {
-                    "description": "13\"3/8 Stop Collar &  Centralizer",
-                    "lump_sum_day_rate": "3972",
-                    "unit": "$",
-                    "discount": "",
-                    "quantity": "",
-                    "daily_cost": "0"
-                },
-                {
-                    "description": "Tube Thread Lock & Lube Seal",
-                    "lump_sum_day_rate": "468",
-                    "unit": "$",
-                    "discount": "",
-                    "quantity": "",
-                    "daily_cost": "0"
-                }
-            ],
-            "total": 0.0
+            "items": [],
+            
+            "total": ""
+            
         },
+        
+        "20\" FLOAT SHOE": {
+            "items": [],
+            
+            "total": ""
+            
+        },
+        
+        "TUBE THREAD LOCK": {
+            "items": [{
+                "unit": "$",
+                "quantity": "",
+                "description": "TRANSPORTATION COST F/103A weatherford base T/ SIPEX  Rig site",
+                "discount": "",
+                "lump_sum_day_rate": "5000",
+                "daily_cost": "0"
+            }],
+            
+            "total": "0"
+            
+        },
+        
         "RUNNING CASING AND TUBING - WEATHERFORD": {
+            "items": [],
+            
+            "total": ""
+            
+        },
+        
+        "CREW & EQUIPMENT  MOB/DEMOB": {
+            "items": [],
+            
+            "total": ""
+            
+        },
+        
+        "SERVICE RUN CSG 20\"": {
             "items": [
                 {
-                    "description": "Service run casing 13\"3/8",
-                    "lump_sum_day_rate": "7532",
-                    "unit": "$",
-                    "discount": "",
+                    "unit": "",
                     "quantity": "",
-                    "daily_cost": "0"
-                },
-                {
-                    "description": "Crew & Equipment Mob/Demob",
-                    "lump_sum_day_rate": "4656",
-                    "unit": "$",
-                    "discount": "",
-                    "quantity": "",
-                    "daily_cost": "0"
-                },
-                {
                     "description": "logging",
+                    "discount": "",
                     "lump_sum_day_rate": "",
-                    "unit": "",
-                    "discount": "",
-                    "quantity": "",
                     "daily_cost": ""
                 },
                 {
+                    "unit": "$",
+                    "quantity": "1",
                     "description": "Logging Unit Stand by",
-                    "lump_sum_day_rate": "2500",
-                    "unit": "$",
                     "discount": "",
-                    "quantity": "0",
+                    "lump_sum_day_rate": "0",
                     "daily_cost": "0"
-                },
-                {
-                    "description": "GR-RESISTIVITY-CALIPER",
-                    "lump_sum_day_rate": "37463",
-                    "unit": "$",
-                    "discount": "",
-                    "quantity": "",
-                    "daily_cost": "0"
-                },
-                {
-                    "description": "test",
-                    "lump_sum_day_rate": "45",
-                    "unit": "",
-                    "discount": "",
-                    "quantity": "",
-                    "daily_cost": ""
                 }
             ],
-            "total": 0.0
+            
+            "total": "0"
+            
         },
+        
         "CEMENTING CASING AND TUBING TESTING & COMPLETION - SCHLUMBERGER": {
-            "items": [
-                {
-                    "description": "Pers & cmt eqpt   daily rate std by while operating",
-                    "lump_sum_day_rate": "1270",
-                    "unit": "$",
-                    "discount": "",
-                    "quantity": "1",
-                    "daily_cost": "1270"
-                },
-                {
-                    "description": "Cementing csg 13\"3/8 Products",
-                    "lump_sum_day_rate": "42628",
-                    "unit": "$",
-                    "discount": "",
-                    "quantity": "",
-                    "daily_cost": "0"
-                }
-            ],
-            "total": 1270.0
+            "items": [{
+                "unit": "$",
+                "quantity": "1",
+                "description": "Pers & cmt eqpt   daily rate std by while operating",
+                "discount": "",
+                "lump_sum_day_rate": "1270",
+                "daily_cost": "1270"
+            }],
+            
+            "total": ""
+            
         },
+        
+        "CEMENTING COST 20\" CASING": {
+            "items": [],
+            
+            "total": "1270"
+            
+        },
+        
         "RIG SUPERVISION": {
-            "items": [
-                {
-                    "description": "Drilling Supervision",
-                    "lump_sum_day_rate": "3500",
-                    "unit": "$",
-                    "discount": "",
-                    "quantity": "1",
-                    "daily_cost": "3500"
-                }
-            ],
-            "total": 3500.0
+            "items": [{
+                "unit": "$",
+                "quantity": "1",
+                "description": "Drilling Supervision",
+                "discount": "",
+                "lump_sum_day_rate": "3500",
+                "daily_cost": "3500"
+            }],
+            
+            "total": "3500"
+            
         },
+        
         "WATER SUPPLIED WITH OLD DISTANCE & OLD  COST SINCE SEPT/02  TO SEPT 14 /2013   -MARAR": {
             "items": [],
-            "total": 0.0
+            
+            "total": "0"
+            
         },
+        
         "WATER SUPPLIED   WITH NEW DISTANCE AND NEW COST    - MARAR": {
             "items": [
                 {
-                    "description": " Water truck for camp       20 m3 ",
-                    "lump_sum_day_rate": "2",
                     "unit": "$",
-                    "discount": "400",
                     "quantity": "1",
+                    "description": "Water truck for camp       20 m3",
+                    "discount": "400",
+                    "lump_sum_day_rate": "2",
                     "daily_cost": "800"
                 },
                 {
-                    "description": " Water truck for Rig       20 m3   ",
-                    "lump_sum_day_rate": "2",
                     "unit": "$",
-                    "discount": "400",
                     "quantity": "3",
+                    "description": "Water truck for Rig       20 m3",
+                    "discount": "400",
+                    "lump_sum_day_rate": "1.54",
                     "daily_cost": "1848"
                 }
             ],
-            "total": 2648.0
+            
+            "total": "2648"
+            
         },
+        
         "WATER SERVICES - NAZAR": {
-            "items": [
-                {
-                    "description": "Provide package for water well 1 + water well 2 on stand by ( 1200+269 )",
-                    "lump_sum_day_rate": "1469",
-                    "unit": "$",
-                    "discount": "",
-                    "quantity": "1",
-                    "daily_cost": "1469"
-                }
-            ],
-            "total": 1469.0
+            "items": [{
+                "unit": "$",
+                "quantity": "1",
+                "description": "Provide package for water well 1 + water well 2 on stand by ( 1200+269 )",
+                "discount": "",
+                "lump_sum_day_rate": "1469",
+                "daily_cost": "1469"
+            }],
+            
+            "total": "1469"
+            
         },
+        
         "SECURITY": {
             "items": [
                 {
-                    "description": "Watch  man",
-                    "lump_sum_day_rate": "80",
                     "unit": "$",
-                    "discount": "",
                     "quantity": "12",
+                    "description": "Watch  man",
+                    "discount": "",
+                    "lump_sum_day_rate": "80",
                     "daily_cost": "960"
                 },
                 {
-                    "description": "Equipement",
-                    "lump_sum_day_rate": "400",
                     "unit": "$",
-                    "discount": "",
                     "quantity": "1",
+                    "description": "Equipement",
+                    "discount": "",
+                    "lump_sum_day_rate": "400",
                     "daily_cost": "400"
+                },
+                {
+                    "unit": "",
+                    "quantity": "",
+                    "description": "Daily cost",
+                    "discount": "",
+                    "lump_sum_day_rate": "",
+                    "daily_cost": "65675.54000000001"
                 }
             ],
-            "total": 1360.0
-        },
-        "daily_cost_total": 76291.675
+            
+            "total": "1360"
+            
+        }
+        
     }
+    
 }

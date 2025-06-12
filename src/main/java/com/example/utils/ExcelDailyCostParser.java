@@ -39,9 +39,11 @@ public class ExcelDailyCostParser {
                 }
             }
 
+            // ... (tout le code de traitement reste identique) ...
+
             // Initialisation des structures de données
-            Map<String, JSONObject> mainCategories = new LinkedHashMap<>(); // Pour maintenir l'ordre
-            List<String> categoryOrder = new ArrayList<>(); // Liste pour préserver l'ordre des catégories
+            Map<String, JSONObject> mainCategories = new LinkedHashMap<>();
+            List<String> categoryOrder = new ArrayList<>();
             String currentCategory = null;
             Object dailyCostTotal = null;
 
@@ -96,7 +98,7 @@ public class ExcelDailyCostParser {
                                 category.put("items", new JSONArray());
                                 category.put("total", "");
                                 mainCategories.put(currentCategory, category);
-                                categoryOrder.add(currentCategory); // Garder trace de l'ordre des catégories
+                                categoryOrder.add(currentCategory);
                             }
                         }
                     } else {
@@ -110,7 +112,7 @@ public class ExcelDailyCostParser {
                                     category.put("items", new JSONArray());
                                     category.put("total", "");
                                     mainCategories.put(currentCategory, category);
-                                    categoryOrder.add(currentCategory); // Ajouter à l'ordre
+                                    categoryOrder.add(currentCategory);
                                 }
                             }
 
@@ -175,16 +177,29 @@ public class ExcelDailyCostParser {
             CustomJSONObject data = new CustomJSONObject();
             data.put("daily_cost", dailyCost);
 
-            // Sauvegarder dans un fichier JSON
-            if (outputJsonPath != null && !outputJsonPath.isEmpty()) {
-                File outputFile = new File(outputJsonPath);
-                if (!outputFile.getParentFile().exists()) {
-                    outputFile.getParentFile().mkdirs();
+            // Sauvegarder dans un fichier JSON avec le chemin webapp correct
+            try {
+                // Obtenir le chemin réel du répertoire WEB-INF/data
+                String outputDirectory = "C:\\Users\\dinap\\OneDrive\\Bureau\\ESI\\2CS\\S2\\Projet 2CS\\test\\test_j2ee\\src\\main\\webapp\\WEB-INF\\data";
+                String fileName = "daily_cost_data.json";
+
+                // Create the output directory if it doesn't exist
+                File dataDir = new File(outputDirectory);
+                if (!dataDir.exists()) {
+                    dataDir.mkdirs();
                 }
 
-                try (FileWriter writer = new FileWriter(outputFile)) {
+                // Build the path to the file in the specified directory
+                File jsonFile = new File(dataDir, fileName);
+
+                // Write the JSON file
+                try (FileWriter writer = new FileWriter(jsonFile)) {
                     writer.write(data.toString(4));
+                    System.out.println("Daily cost data JSON written to: " + jsonFile.getAbsolutePath());
                 }
+            } catch (IOException e) {
+                System.err.println("Error writing daily cost JSON to file: " + e.getMessage());
+                e.printStackTrace();
             }
 
             workbook.close();
