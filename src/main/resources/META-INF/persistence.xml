@@ -11,7 +11,6 @@
         <class>com.example.entities.ZONE</class>
         <class>com.example.entities.PUITS</class>
         <class>com.example.entities.DelaiOpr</class>
-        <class>com.example.entities.JournalDelai</class>
         <class>com.example.entities.CoutOpr</class>
         <class>com.example.entities.Journal_qualite</class>
         <class>com.example.entities.DRILLING_PARAMETERS</class>
