@@ -308,11 +308,6 @@ Spécialisée dans la modélisation des données métier et l'optimisation des b
 **Livraison prévue** : Juin 2025
 
 ---
-## Technologies et outils de développement
-
-
-
----
 
 ## Support et Documentation
 
