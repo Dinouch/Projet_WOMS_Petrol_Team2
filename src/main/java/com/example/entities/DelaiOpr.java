@@ -1,6 +1,9 @@
 package com.example.entities;
 
+import com.google.gson.annotations.Expose;
 import jakarta.persistence.*;
+
+import java.math.BigDecimal;
 import java.sql.Time;
 import java.util.Date;
 
@@ -21,6 +24,10 @@ public class DelaiOpr {
 
     @Column(name = "end_time")
     private Time endTime;
+
+
+    @Column(name = "dureepr")
+    private String dureepr;
 
     @Column(name = "statut_delai")
     private String statutDelai;
@@ -149,5 +156,10 @@ public class DelaiOpr {
     public void setNom_puit(String nom_puit) {
         this.nom_puit = nom_puit;
     }
+
+    public void setDureepr(String dureepr) {
+        this.dureepr = dureepr;
+    }
+    public String getDureepr() { return dureepr;     }
 
 }

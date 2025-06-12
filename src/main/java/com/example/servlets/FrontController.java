@@ -5,6 +5,7 @@ import com.example.dao.FichierDrillingDAO;
 import com.example.dao.UserDAO;
 import com.example.entities.APP_USERS;
 import com.example.entities.DRILLING_PARAMETERS;
+import com.example.entities.FICHIER_DRILLING;
 import com.example.utils.DrillingReportParserEJB;
 import com.example.utils.ExcelDailyCostParser;
 import com.example.utils.DrillingReportParser;
@@ -42,7 +43,8 @@ import java.util.Collection;
         "/importJournalQualite",
         "/createZone",
         "/drilling-parameters",
-        "/importDrillingParameters"
+        "/importDrillingParameters",
+        "/reports"
 })
 @MultipartConfig(
         fileSizeThreshold = 1024 * 1024 * 1,    // 1 MB
@@ -58,7 +60,6 @@ public class FrontController extends HttpServlet {
 
     @EJB
     private DrillingParametersDAO drillingParametersDAO;
-
     @EJB
     private FichierDrillingDAO fichierDrillingDAO;
 
@@ -127,6 +128,11 @@ public class FrontController extends HttpServlet {
                 case "/importDrillingParameters":
                     request.getRequestDispatcher("/importDrillingParameters.jsp").forward(request, response);
                     break;
+
+                case "/reports":
+                    handleGetReports(request, response);
+                break;
+
                 default:
                     response.sendError(HttpServletResponse.SC_NOT_FOUND, "Page not found");
             }
@@ -149,6 +155,7 @@ public class FrontController extends HttpServlet {
             switch (servletPath) {
                 case "/upload-excel":
                     handleReactExcelUpload(request, response);
+                    handleExcelUpload(request, response);
                     break;
                 case "/importJson":
                     new ImportJsonServlet().doPost(request, response);
@@ -180,6 +187,8 @@ public class FrontController extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
             sendJsonError(response, "Error: " + e.getMessage());
+            request.setAttribute("errorMessage", "Error: " + e.getMessage());
+            request.getRequestDispatcher("/error.jsp").forward(request, response);
         }
     }
 
@@ -485,4 +494,171 @@ public class FrontController extends HttpServlet {
             throw new ServletException("Error downloading JSON file: " + e.getMessage(), e);
         }
     }
+
+
+
+    private void handleGetReports(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        // Récupération des paramètres de filtre
+        String dateParam = request.getParameter("date");               // Ex: 2024-12-31
+        String profondeurParam = request.getParameter("profondeur");  // Ex: 3500
+        String puitsParam = request.getParameter("puits");            // Ex: HBN-1
+        String operationParam = request.getParameter("operation");    // Ex: Nettoyage
+
+        try {
+            List<FICHIER_DRILLING> fichiers = fichierDrillingDAO.findAll();
+            JSONArray jsonArray = new JSONArray();
+
+            for (FICHIER_DRILLING fichier : fichiers) {
+                // --- Filtrage par dateUpload (champ de la table)
+                if (dateParam != null && !dateParam.isEmpty()) {
+                    String dateUploadStr = fichier.getDateUpload().toString();
+                    if (!dateUploadStr.equals(dateParam)) {
+                        continue;
+                    }
+                }
+
+                // Préparer l'objet JSON résultat
+                JSONObject obj = new JSONObject();
+                obj.put("id", fichier.getId());
+                obj.put("filename", fichier.getNomFichier());
+                obj.put("dateUpload", fichier.getDateUpload().toString());
+
+                String jsonData = fichier.getJsonData();
+                boolean skip = false; // indicateur si on doit ignorer ce fichier
+
+                if (jsonData != null && !jsonData.isEmpty()) {
+                    try {
+                        JSONObject jsonParsed = new JSONObject(jsonData);
+
+                        // Extraire les informations depuis header
+                        String dateRapport = "";
+                        String nomPuits = "";
+                        String profondeurStr = "";
+
+                        if (jsonParsed.has("header")) {
+                            JSONObject header = jsonParsed.getJSONObject("header");
+
+                            // Date du rapport depuis header.report_date
+                            dateRapport = header.optString("report_date", "N/A");
+
+                            // Nom du puits depuis header.well_name
+                            nomPuits = header.optString("well_name", "");
+
+                            // Profondeur depuis header.depth_24h_ft
+                            profondeurStr = header.optString("depth_24h_ft", "");
+                        }
+
+                        // --- Filtres : profondeur, puits
+                        if (profondeurParam != null && !profondeurParam.isEmpty()) {
+                            if (!profondeurStr.equals(profondeurParam)) {
+                                skip = true;
+                            }
+                        }
+
+                        if (puitsParam != null && !puitsParam.isEmpty()) {
+                            if (!nomPuits.equalsIgnoreCase(puitsParam)) {
+                                skip = true;
+                            }
+                        }
+
+                        // --- Filtres : opération (dernière opération non vide)
+                        String derniereOperation = "";
+                        if (operationParam != null && !operationParam.isEmpty()) {
+                            boolean operationFound = false;
+
+                            if (jsonParsed.has("operations") && jsonParsed.getJSONObject("operations").has("operations")) {
+                                JSONArray operations = jsonParsed.getJSONObject("operations").getJSONArray("operations");
+
+                                // Chercher la dernière opération non vide
+                                for (int i = operations.length() - 1; i >= 0; i--) {
+                                    JSONObject operation = operations.getJSONObject(i);
+                                    String code = operation.optString("code", "").trim();
+                                    String description = operation.optString("description", "").trim();
+
+                                    if (!code.isEmpty() || !description.isEmpty()) {
+                                        derniereOperation = code + (description.isEmpty() ? "" : " - " + description);
+
+                                        // Vérifier si l'opération correspond au filtre
+                                        if (code.toLowerCase().contains(operationParam.toLowerCase()) ||
+                                                description.toLowerCase().contains(operationParam.toLowerCase())) {
+                                            operationFound = true;
+                                        }
+                                        break;
+                                    }
+                                }
+
+                                if (!operationFound && !derniereOperation.isEmpty()) {
+                                    skip = true;
+                                }
+                            } else {
+                                skip = true; // pas d'opérations du tout
+                            }
+                        } else {
+                            // Si pas de filtre opération, récupérer quand même la dernière opération pour l'affichage
+                            if (jsonParsed.has("operations") && jsonParsed.getJSONObject("operations").has("operations")) {
+                                JSONArray operations = jsonParsed.getJSONObject("operations").getJSONArray("operations");
+
+                                // Chercher la dernière opération non vide
+                                for (int i = operations.length() - 1; i >= 0; i--) {
+                                    JSONObject operation = operations.getJSONObject(i);
+                                    String code = operation.optString("code", "").trim();
+                                    String description = operation.optString("description", "").trim();
+
+                                    if (!code.isEmpty() || !description.isEmpty()) {
+                                        derniereOperation = code + (description.isEmpty() ? "" : " - " + description);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
+                        // Si on a décidé de skip, on passe au fichier suivant
+                        if (skip) continue;
+
+                        // Ajout des informations extraites
+                        obj.put("dateRapport", dateRapport);
+                        obj.put("profondeurTVD", profondeurStr);
+                        obj.put("puits", nomPuits);
+                        obj.put("derniereOperation", derniereOperation);
+
+                        // Ajouter des informations supplémentaires depuis mud_information si disponibles
+                        if (jsonParsed.has("mud_information")) {
+                            JSONObject mudInfo = jsonParsed.getJSONObject("mud_information");
+
+                            // Volume de boue active
+                            if (mudInfo.has("VOLUMES_BBL")) {
+                                JSONObject volumes = mudInfo.getJSONObject("VOLUMES_BBL");
+                                obj.put("boueActive", volumes.optString("ACTIVE", "N/A"));
+                            }
+
+
+                        }
+
+
+
+                    } catch (Exception e) {
+                        obj.put("error_parsing_jsonData", e.getMessage());
+                    }
+
+                } else {
+                    obj.put("jsonData", JSONObject.NULL);
+                }
+
+                jsonArray.put(obj);
+            }
+
+            response.getWriter().write(jsonArray.toString());
+
+        } catch (Exception e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            JSONObject error = new JSONObject();
+            error.put("error", e.getMessage());
+            response.getWriter().write(error.toString());
+        }
+    }
+
 }

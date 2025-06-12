@@ -27,10 +27,13 @@ public class FICHIER_DRILLING {
     @Column(name = "JSON_DATA")
     private String jsonData;
 
+<<<<<<< HEAD
     @Lob
     @Column(name = "JSON_COST_DATA")
     private String jsonCostData;
 
+=======
+>>>>>>> origin/zola_back
     // Getters et setters
     public Long getId() {
         return id;
@@ -71,6 +74,7 @@ public class FICHIER_DRILLING {
     public void setJsonData(String jsonData) {
         this.jsonData = jsonData;
     }
+<<<<<<< HEAD
 
     public String getJsonCostData() {
         return jsonCostData;
@@ -80,3 +84,6 @@ public class FICHIER_DRILLING {
         this.jsonCostData = jsonCostData;
     }
 }
+=======
+}
+>>>>>>> origin/zola_back

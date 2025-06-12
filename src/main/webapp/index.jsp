@@ -29,6 +29,7 @@
              <li><a href="#" onclick="importCoutOpr()">Importer les cout </a></li>
                <li><a href="#" onclick="importJournalQualite()">Importer le journal qualite  </a></li>
                <li><a href="#" onclick="importDrillingParameters()">Importer les paramètres de forage</a></li>
+               <li><a href="#" onclick="coutAlerts()">alerte cout</a></li>
         </ul>
     </nav>
 
@@ -58,6 +59,7 @@
         .catch(error => alert('Erreur: ' + error));
     }
     
+
         function importJson() {
             fetch('importJson', {
                 method: 'POST',
@@ -136,6 +138,19 @@
                      .then(data => alert(data))
                      .catch(error => alert('Erreur: ' + error));
                  }
+
+
+                  function coutAlerts() {
+                                      fetch('coutAlerts', {
+                                          method: 'POST',
+                                          headers: {
+                                              'Content-Type': 'application/json'
+                                          }
+                                      })
+                                      .then(response => response.text())
+                                      .then(data => alert(data))
+                                      .catch(error => alert('Erreur: ' + error));
+                                  }
     </script>
 </body>
 </html>
