@@ -27,6 +27,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.FileInputStream;
 import java.nio.file.Paths;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Collection;
 
@@ -711,6 +712,119 @@ public class FrontController extends HttpServlet {
 
             // Envoi de la réponse
             response.getWriter().write(jsonArray.toString());
+
+        } catch (Exception e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            JSONObject error = new JSONObject();
+            error.put("error", e.getMessage());
+            response.getWriter().write(error.toString());
+        }
+    }
+
+
+
+
+    private void handleGetFullReportDetails(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        try {
+            String reportId = request.getParameter("id");
+            if (reportId == null || reportId.isEmpty()) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing report ID parameter");
+                return;
+            }
+
+            Long id = Long.parseLong(reportId);
+            FICHIER_DRILLING fichier = fichierDrillingDAO.findById(id);
+            if (fichier == null) {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Report not found");
+                return;
+            }
+
+            // Créer l'objet JSON de réponse
+            JSONObject result = new JSONObject();
+            result.put("id", fichier.getId());
+            result.put("filename", fichier.getNomFichier());
+            result.put("dateUpload", fichier.getDateUpload().toString());
+
+            // Parse le JSON data s'il existe
+            String jsonData = fichier.getJsonData();
+            if (jsonData != null && !jsonData.isEmpty()) {
+                try {
+                    JSONObject jsonParsed = new JSONObject(jsonData);
+
+                    // Extraire toutes les sections du rapport
+                    if (jsonParsed.has("header")) {
+                        JSONObject header = jsonParsed.getJSONObject("header");
+                        JSONObject cleanHeader = new JSONObject();
+
+                        // Nettoyer les valeurs null
+                        Iterator<String> keys = header.keys();
+                        while (keys.hasNext()) {
+                            String key = keys.next();
+                            if (!header.isNull(key)) {
+                                cleanHeader.put(key, header.get(key));
+                            }
+                        }
+                        result.put("header", cleanHeader);
+                    }
+
+                    // Operations
+                    if (jsonParsed.has("operations")) {
+                        JSONObject operations = jsonParsed.getJSONObject("operations");
+                        result.put("operations", operations);
+                    }
+
+                    // Mud information
+                    if (jsonParsed.has("mud_information")) {
+                        JSONObject mudInfo = jsonParsed.getJSONObject("mud_information");
+                        result.put("mud_information", mudInfo);
+                    }
+
+                    // Lithology
+                    if (jsonParsed.has("lithology")) {
+                        JSONArray lithology = jsonParsed.getJSONArray("lithology");
+                        result.put("lithology", lithology);
+                    }
+
+                    // Global info
+                    if (jsonParsed.has("global_info")) {
+                        JSONObject globalInfo = jsonParsed.getJSONObject("global_info");
+                        result.put("global_info", globalInfo);
+                    }
+
+                    // Parameters
+                    if (jsonParsed.has("parameters")) {
+                        JSONObject parameters = jsonParsed.getJSONObject("parameters");
+                        result.put("parameters", parameters);
+                    }
+
+                    // Mud products
+                    if (jsonParsed.has("mud_products")) {
+                        JSONObject mudProducts = jsonParsed.getJSONObject("mud_products");
+                        result.put("mud_products", mudProducts);
+                    }
+
+                    // BHA components
+                    if (jsonParsed.has("bha_components")) {
+                        JSONObject bhaComponents = jsonParsed.getJSONObject("bha_components");
+                        result.put("bha_components", bhaComponents);
+                    }
+
+                    // Remarks
+                    if (jsonParsed.has("remarks")) {
+                        JSONObject remarks = jsonParsed.getJSONObject("remarks");
+                        result.put("remarks", remarks);
+                    }
+
+                } catch (Exception e) {
+                    result.put("error_parsing_jsonData", e.getMessage());
+                }
+            }
+
+            response.getWriter().write(result.toString());
 
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
