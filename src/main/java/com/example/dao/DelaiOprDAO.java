@@ -11,9 +11,7 @@ import jakarta.persistence.TemporalType;
 
 import java.sql.Time;
 import java.time.Duration;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @Stateless
@@ -105,5 +103,46 @@ public class DelaiOprDAO {
                                 "GROUP BY d.nom_puit " +
                                 "ORDER BY d.nom_puit", Object[].class)
                 .getResultList();
+    }
+// Cercle delai et KPI
+public Map<String, Object> getStatistiquesGlobalesDelai(String nomPuit) {
+        Map<String, Object> result = new HashMap<>();
+        final int DELAI_PREVU_TOTAL = 120; // 120 jours
+        final int SEUIL_ORANGE = 110; // Seuil pour passer en orange
+
+        try {
+            // 1. Calcul du nombre de jours distincts (nbrJourX)
+            String sqlNbJours = "SELECT COUNT(DISTINCT TRUNC(date_creation)) FROM delai_opr WHERE nom_puit = ?";
+            Integer nbrJourX = ((Number) em.createNativeQuery(sqlNbJours)
+                    .setParameter(1, nomPuit)
+                    .getSingleResult()).intValue();
+
+            // 2. Calcul du statut global selon la nouvelle logique
+            String statutGlobalDelai;
+
+            if (nbrJourX > DELAI_PREVU_TOTAL) {
+                statutGlobalDelai = "Rouge"; // Dépasse le délai prévu
+            } else if (nbrJourX >= SEUIL_ORANGE) {
+                statutGlobalDelai = "Orange"; // Approche du délai prévu
+            } else {
+                statutGlobalDelai = "Vert"; // Dans les temps
+            }
+
+            // 3. Calcul des indicateurs
+            int totalPrevuReste = DELAI_PREVU_TOTAL - nbrJourX;
+            int totalNonPrevu = Math.max(nbrJourX - DELAI_PREVU_TOTAL, 0);
+
+            // 4. Stockage des résultats
+            result.put("statutGlobalDelai", statutGlobalDelai);
+            result.put("nbrJourX", nbrJourX);
+            result.put("totalJour", nbrJourX);
+            result.put("totalPrevuReste", totalPrevuReste);
+            result.put("totalNonPrevu", totalNonPrevu);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur lors du calcul des statistiques de délai", e);
+        }
+
+        return result;
     }
 }

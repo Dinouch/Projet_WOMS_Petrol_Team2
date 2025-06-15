@@ -5,13 +5,17 @@ import jakarta.ejb.Stateless;
 import jakarta.ejb.TransactionAttribute;
 import jakarta.ejb.TransactionAttributeType;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.Persistence;
 import jakarta.persistence.PersistenceContext;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.example.config.JpaUtil.getEntityManager;
 
 @Stateless
 public class CoutOprDAO {
@@ -155,10 +159,92 @@ public class CoutOprDAO {
                 .getResultList();
     }
 
+    public List<Object[]> getOperationsPourPuit(String nomPuit, Date date) {
+        String jpql = "SELECT c.date, SUM(c.coutReel), SUM(c.coutPrevu), c.phase " +
+                "FROM CoutOpr c " +
+                "WHERE c.nom_puit = :nomPuit AND c.date = :date " +
+                "GROUP BY c.date, c.phase";
+
+        return em.createQuery(jpql, Object[].class)
+                .setParameter("nomPuit", nomPuit)
+                .setParameter("date", date)
+                .getResultList();
+    }
 
 
+    public List<CoutOpr> getOperationsPourPuitEtDate(String nomPuit, Date date) {
+        try {
+            String jpql = "SELECT c FROM CoutOpr c WHERE c.nom_puit = :nomPuit AND c.date_creation = :date ORDER BY c.idCoutOpr";
+            return em.createQuery(jpql, CoutOpr.class)
+                    .setParameter("nomPuit", nomPuit)
+                    .setParameter("date", date)
+                    .getResultList();
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur lors de la récupération des opérations pour le puits " + nomPuit
+                    + " et la date " + date, e);
+        }
+    }
 
 
+// pop up cout jdida
+public List<CoutOpr> findByPuitAndDate(String nomPuit, Date date) {
+    return em.createQuery(
+                    "SELECT c FROM CoutOpr c WHERE c.nom_puit = :nomPuit AND c.date_creation = :date",
+                    CoutOpr.class)
+            .setParameter("nomPuit", nomPuit)
+            .setParameter("date", date)
+            .getResultList();
+}
+// pour page cout global
+
+    public Map<String, Object> getStatistiquesGlobalesProjet(String nomPuit) {
+        Map<String, Object> result = new HashMap<>();
+        BigDecimal budgetPrevisionnel = new BigDecimal("22112000");
+
+        try {
+            // 1. Calcul du total réel
+            String sqlSommeReel = "SELECT SUM(COALESCE(cout_reel, 0)) FROM cout_opr WHERE nom_puit = ?";
+            BigDecimal totalReel = convertToBigDecimal(
+                    em.createNativeQuery(sqlSommeReel)
+                            .setParameter(1, nomPuit)
+                            .getSingleResult()
+            );
+
+            // 2. Détermination du statut global
+            String statutGlobal = "Vert"; // Par défaut
+            if (totalReel.compareTo(budgetPrevisionnel) > 0) {
+                statutGlobal = "Rouge";
+            }
+
+            // 3. Calculs des indicateurs
+            BigDecimal totalPrevuReste = budgetPrevisionnel.subtract(totalReel).max(BigDecimal.ZERO);
+            BigDecimal totalNonPrevu = totalReel.subtract(budgetPrevisionnel).max(BigDecimal.ZERO);
+
+            // 4. Arrondi des valeurs
+            totalReel = totalReel.setScale(2, RoundingMode.HALF_UP);
+            totalPrevuReste = totalPrevuReste.setScale(2, RoundingMode.HALF_UP);
+            totalNonPrevu = totalNonPrevu.setScale(2, RoundingMode.HALF_UP);
+            budgetPrevisionnel = budgetPrevisionnel.setScale(2, RoundingMode.HALF_UP);
+
+            // 5. Stockage des résultats
+            result.put("statutGlobal", statutGlobal);
+            result.put("totalReel", totalReel);
+            result.put("totalPrevuReste", totalPrevuReste);
+            result.put("totalNonPrevu", totalNonPrevu);
+            result.put("budgetPrevisionnel", budgetPrevisionnel);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur lors du calcul des statistiques globales", e);
+        }
+
+        return result;
+    }
+
+    private BigDecimal convertToBigDecimal(Object value) {
+        if (value == null) return BigDecimal.ZERO;
+        if (value instanceof BigDecimal) return (BigDecimal) value;
+        return new BigDecimal(value.toString());
+    }
 
 
 

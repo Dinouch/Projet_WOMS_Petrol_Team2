@@ -9,16 +9,28 @@ import jakarta.servlet.http.*;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
+import java.util.Map;
 
 @WebServlet("/analyseCouts")
 public class AnalyseCoutsServlet extends HttpServlet {
 
     @Inject
     private CoutOprDAO coutOprDAO;
+    private void setCorsHeaders(HttpServletResponse response) {
+        response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+        response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+        response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
+        response.setHeader("Access-Control-Allow-Credentials", "true");
+        response.setHeader("Access-Control-Max-Age", "3600");
+    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        setCorsHeaders(response);
+
         response.setContentType("application/json;charset=UTF-8");
         PrintWriter out = response.getWriter();
         JsonObject jsonResponse = new JsonObject();
@@ -83,6 +95,34 @@ public class AnalyseCoutsServlet extends HttpServlet {
                         arrayMois.add(obj);
                     }
                     jsonResponse.add("data", arrayMois);
+                    break;
+
+                case "statistiquesGlobales":
+                    try {
+                        Map<String, Object> stats = coutOprDAO.getStatistiquesGlobalesProjet(nomPuit);
+
+                        jsonResponse.addProperty("statutGlobal", (String) stats.get("statutGlobal"));
+                        jsonResponse.addProperty("totalReel", ((BigDecimal) stats.get("totalReel")).setScale(2, RoundingMode.HALF_UP).toString());
+                        jsonResponse.addProperty("totalPrevuReste", ((BigDecimal) stats.get("totalPrevuReste")).setScale(2, RoundingMode.HALF_UP).toString());
+                        jsonResponse.addProperty("totalNonPrevu", ((BigDecimal) stats.get("totalNonPrevu")).setScale(2, RoundingMode.HALF_UP).toString());
+                        jsonResponse.addProperty("budgetPrevisionnel", ((BigDecimal) stats.get("budgetPrevisionnel")).setScale(2, RoundingMode.HALF_UP).toString());
+
+                        // Calcul du pourcentage de consommation
+                        BigDecimal totalReel = (BigDecimal) stats.get("totalReel");
+                        BigDecimal budget = (BigDecimal) stats.get("budgetPrevisionnel");
+                        BigDecimal pourcentageConsomme = BigDecimal.ZERO;
+
+                        if (budget.compareTo(BigDecimal.ZERO) > 0) {
+                            pourcentageConsomme = totalReel.divide(budget, 4, RoundingMode.HALF_UP)
+                                    .multiply(new BigDecimal("100"));
+                        }
+
+                        jsonResponse.addProperty("pourcentageConsomme", pourcentageConsomme.setScale(2, RoundingMode.HALF_UP).toString());
+
+                    } catch (Exception e) {
+                        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                        jsonResponse.addProperty("error", "Erreur lors du calcul des statistiques: " + e.getMessage());
+                    }
                     break;
 
 

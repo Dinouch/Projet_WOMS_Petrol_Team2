@@ -26,11 +26,19 @@ public class ImportCoutOprServlet extends HttpServlet {
 
     @Inject
     private CoutOprDAO coutOprDAO;
+    private void setCorsHeaders(HttpServletResponse response) {
+        response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+        response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+        response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
+        response.setHeader("Access-Control-Allow-Credentials", "true");
+        response.setHeader("Access-Control-Max-Age", "3600");
+    }
 
     @Override
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        setCorsHeaders(response);
 
         response.setContentType("application/json;charset=UTF-8");
         PrintWriter out = response.getWriter();
@@ -94,7 +102,7 @@ public class ImportCoutOprServlet extends HttpServlet {
             throws ServletException, IOException {
         // Garder ici le code existant de import des JSON (non modifié)
         // Je te le remets juste pour que le code soit complet :
-
+        setCorsHeaders(response);
         response.setContentType("application/json;charset=UTF-8");
         PrintWriter out = response.getWriter();
         JsonObject jsonResponse = new JsonObject();
