@@ -3,6 +3,10 @@ package com.example.entities;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.example.config.JpaUtil.getEntityManager;
 
 @Entity
 @Table(name = "COUT_OPR")
@@ -101,5 +105,58 @@ public class CoutOpr {
 
     public void setNom_puit(String nom_puit) {
         this.nom_puit = nom_puit;
+    }
+
+    public void remplirCoutPrevuDepuisMap() {
+
+        Map<String, BigDecimal> coutsPrevus = new HashMap<>();
+        coutsPrevus.put("DRILLING RIG  - ENTP", new BigDecimal("2700000"));
+
+        coutsPrevus.put("ADDITIONAL SERVICES", new BigDecimal("2700000"));
+        coutsPrevus.put("DOWNHOLE RENTAL TOOLS  - WEATHERFORD", new BigDecimal("2700000"));
+        coutsPrevus.put("SOLID CONTROL - NOS", new BigDecimal("15000"));
+        coutsPrevus.put("COMMUNICATION AND DATA", new BigDecimal("2700000"));
+        coutsPrevus.put("RIG SUPERVISION", new BigDecimal("2700000"));
+        coutsPrevus.put("SECURITY", new BigDecimal("2700000"));
+
+        coutsPrevus.put("MUD LOGGING -  WEATHERFORD", new BigDecimal("150000"));
+        coutsPrevus.put("CEMENTING CASING AND TUBING TESTING & COMPLETION - SCHLUMBERGER", new BigDecimal("225000"));
+        coutsPrevus.put("WATER SUPPLIED WITH OLD DISTANCE & OLD  COST SINCE SEPT/02  TO SEPT 14 /2013   -MARAR", new BigDecimal("700000"));
+        coutsPrevus.put("WATER SUPPLIED   WITH NEW DISTANCE AND NEW COST    - MARAR", new BigDecimal("700000"));
+        coutsPrevus.put("WATER SERVICES - NAZAR", new BigDecimal("700000"));
+
+        coutsPrevus.put("WELL  HEAD  MSP DRILEX", new BigDecimal("56000"));
+
+        coutsPrevus.put("CASING", new BigDecimal("86000"));
+        coutsPrevus.put("CASING ACCESSORIES - WEATHERFORD", new BigDecimal("200000"));
+        coutsPrevus.put("RUNNING CASING AND TUBING - WEATHERFORD", new BigDecimal("200000"));
+
+        coutsPrevus.put("DRILLING BITS - NOV", new BigDecimal("280000"));
+        coutsPrevus.put("CORING - ENTP", new BigDecimal("50000"));
+        coutsPrevus.put("DRILLING MUD  - NOS", new BigDecimal("350000"));
+        coutsPrevus.put("LOGGING - SCHLUMBERGER", new BigDecimal("400000"));
+        coutsPrevus.put("TESTING - ENTP", new BigDecimal("1100000"));
+        coutsPrevus.put("SECURITE", new BigDecimal("700000"));
+
+
+
+        EntityManager em = getEntityManager();
+        EntityTransaction transaction = em.getTransaction();
+
+        try {
+            transaction.begin();
+            for (Map.Entry<String, BigDecimal> entry : coutsPrevus.entrySet()) {
+                em.createQuery("UPDATE CoutOpr c SET c.coutPrevu = :cout WHERE c.nomOpr = :nom")
+                        .setParameter("cout", entry.getValue())
+                        .setParameter("nom", entry.getKey())
+                        .executeUpdate();
+            }
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction.isActive()) {
+                transaction.rollback();
+            }
+            throw new RuntimeException("Erreur lors du remplissage des coûts prévus : " + e.getMessage(), e);
+        }
     }
 }

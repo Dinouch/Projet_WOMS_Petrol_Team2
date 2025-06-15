@@ -18,6 +18,8 @@ import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.Random;
 
 @WebServlet("/importDelaiOpr")
 public class ImportDelaiOprServlet extends HttpServlet {
@@ -32,9 +34,29 @@ public class ImportDelaiOprServlet extends HttpServlet {
         response.setContentType("application/json;charset=UTF-8");
         PrintWriter out = response.getWriter();
         JsonObject jsonResponse = new JsonObject();
+        Random random = new Random();
 
         try {
-            // 1. Chargement du JSON
+            // Mode génération aléatoire uniquement
+            if ("random".equals(request.getParameter("mode"))) {
+                int count = 50; // Valeur par défaut
+                try {
+                    count = Integer.parseInt(request.getParameter("count"));
+                } catch (Exception e) {
+                    // Conserver la valeur par défaut
+                }
+
+                // Génération des données aléatoires
+                delaiOprDAO.generateTestData(count);
+
+                jsonResponse.addProperty("success", true);
+                jsonResponse.addProperty("created_count", count);
+                jsonResponse.addProperty("message", count + " enregistrements aléatoires générés avec succès");
+                out.print(jsonResponse.toString());
+                return;
+            }
+
+            // Mode traitement normal du fichier JSON
             InputStream is = getServletContext().getResourceAsStream("/WEB-INF/data/drilling_report_data.json");
             if (is == null) {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -43,14 +65,11 @@ public class ImportDelaiOprServlet extends HttpServlet {
                 return;
             }
 
-            // 2. Parsing du fichier
+            // Parsing du fichier
             JsonObject jsonObject = JsonParser.parseReader(new InputStreamReader(is, "UTF-8")).getAsJsonObject();
             JsonArray operations = jsonObject.getAsJsonArray("operations");
             JsonObject header = jsonObject.getAsJsonObject("header");
             JsonObject remarks = jsonObject.getAsJsonObject("remarks");
-
-
-
 
             if (operations == null || operations.size() == 0) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -59,64 +78,38 @@ public class ImportDelaiOprServlet extends HttpServlet {
                 return;
             }
 
-            // 3. Traitement de chaque opération
+            // Traitement de chaque opération
             int createdCount = 0;
             SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
 
+            // Dans la méthode doPost, partie traitement des opérations
             for (int i = 0; i < operations.size(); i++) {
                 JsonObject operation = operations.get(i).getAsJsonObject();
 
-                // Vérifier si l'opération a des données valides
-                if (operation.get("description").getAsString().isEmpty() &&
-                        operation.get("start_time").getAsString().isEmpty() &&
-                        operation.get("end_time").getAsString().isEmpty()) {
-                    continue;
-                }
-
-                // 4. Création de l'entité DelaiOpr
                 DelaiOpr delaiOpr = new DelaiOpr();
-                delaiOpr.setDespOpr(operation.get("description").getAsString());
 
-                if (header != null) {
+                // Génération ALÉATOIRE OBLIGATOIRE (même si description vide)
+                Random rand = new Random();
+                delaiOpr.setDureePr(String.format("%dh%02d",
+                        1 + rand.nextInt(5),  // 1-5 heures
+                        rand.nextInt(60)));   // 0-59 minutes
 
+                // Si opération valide
+                if (!operation.get("description").getAsString().isEmpty()) {
+                    delaiOpr.setDespOpr(operation.get("description").getAsString());
 
-
-
-                    delaiOpr.setNom_puit(header.get("well_name").getAsString());
-
-                    // Profondeur
-                    delaiOpr.setProfondeur(header.get("depth_24h_ft").getAsString());
-
-                    // Progress
-                    delaiOpr.setProgress(header.get("progress_ft").getAsString());
-
-                    delaiOpr.setPhase(header.get("last_casing").getAsString());
-
-                    // Date (conversion depuis le format original)
-                    String dateStr = header.get("report_date").getAsString();
-                    SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
-                    Date parsedDate = sdf.parse(dateStr);
-                    delaiOpr.setDate(new java.sql.Date(parsedDate.getTime()));
-                }
-
-                // Extraction des NPT depuis les remarques
-                if (remarks != null && remarks.has("remarks")) {
-                    for (com.google.gson.JsonElement element : remarks.getAsJsonArray("remarks")) {
-                        String remark = element.getAsString();
-                        if (remark.contains("Daily NPT")) {
-                            // Exemple de format: "Daily NPT = 22 hrs / Cumulative NPT = 0.24 days"
-                            String dailyPart = remark.substring(remark.indexOf("Daily NPT =") + 11);
-                            String[] dailySplit = dailyPart.split("hrs");
-                            if (dailySplit.length > 0) {
-                                delaiOpr.setDailyNpt(dailySplit[0].trim());
-                            }
-
-                            String cumulativePart = remark.substring(remark.indexOf("Cumulative NPT =") + 16);
-                            String[] cumulativeSplit = cumulativePart.split("days");
-                            if (cumulativeSplit.length > 0) {
-                                delaiOpr.setCumulativeNpt(cumulativeSplit[0].trim());
-                            }
+                    // Traitement des heures si disponibles
+                    try {
+                        if (!operation.get("start_time").getAsString().isEmpty()) {
+                            delaiOpr.setStartTime(new Time(timeFormat.parse(
+                                    operation.get("start_time").getAsString()).getTime()));
                         }
+                        if (!operation.get("end_time").getAsString().isEmpty()) {
+                            delaiOpr.setEndTime(new Time(timeFormat.parse(
+                                    operation.get("end_time").getAsString()).getTime()));
+                        }
+                    } catch (ParseException e) {
+                        System.err.println("Erreur parsing time: " + e.getMessage());
                     }
                 }
 
@@ -139,11 +132,11 @@ public class ImportDelaiOprServlet extends HttpServlet {
                 delaiOpr.setDureepr(null);
 
                 // 5. Sauvegarde
+                // Sauvegarde SYSTEMATIQUE
                 delaiOprDAO.create(delaiOpr);
                 createdCount++;
             }
 
-            // 6. Réponse JSON
             jsonResponse.addProperty("success", true);
             jsonResponse.addProperty("created_count", createdCount);
             jsonResponse.addProperty("message", "Délais d'opérations créés avec succès");
@@ -157,4 +150,12 @@ public class ImportDelaiOprServlet extends HttpServlet {
             e.printStackTrace();
         }
     }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        // Permet de générer des données aléatoires via une requête GET
+        doPost(request, response);
+    }
 }
+

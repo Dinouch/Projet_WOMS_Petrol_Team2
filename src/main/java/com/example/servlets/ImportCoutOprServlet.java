@@ -2,40 +2,112 @@ package com.example.servlets;
 
 import com.example.dao.CoutOprDAO;
 import com.example.entities.CoutOpr;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
 import jakarta.inject.Inject;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+
 
 import java.io.*;
 import java.math.BigDecimal;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Map;
+import java.util.List;
 
 @WebServlet("/importCoutOpr")
 public class ImportCoutOprServlet extends HttpServlet {
 
     @Inject
     private CoutOprDAO coutOprDAO;
+    private void setCorsHeaders(HttpServletResponse response) {
+        response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+        response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+        response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
+        response.setHeader("Access-Control-Allow-Credentials", "true");
+        response.setHeader("Access-Control-Max-Age", "3600");
+    }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        setCorsHeaders(response);
 
         response.setContentType("application/json;charset=UTF-8");
         PrintWriter out = response.getWriter();
         JsonObject jsonResponse = new JsonObject();
 
+        String nomPuit = request.getParameter("nomPuit");
+        if (nomPuit == null || nomPuit.isEmpty()) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            jsonResponse.addProperty("error", "Le nom du puits est requis.");
+            out.print(jsonResponse.toString());
+            return;
+        }
+
         try {
-            // 1. Chargement du JSON des coûts
+            List<Object[]> resultats = coutOprDAO.getSommeCoutsParJourPourPuit(nomPuit);
+
+            JsonArray dataArray = new JsonArray();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+            for (Object[] row : resultats) {
+                Date date = (Date) row[0];
+                BigDecimal sommeReel = (BigDecimal) row[1];
+                BigDecimal sommePrevu = (BigDecimal) row[2];
+                String phase = (String) row[3];
+
+                String statutCout;
+                if (sommeReel.compareTo(sommePrevu) > 0) {
+                    statutCout = "Dépassement";
+                } else if (sommeReel.compareTo(sommePrevu) == 0) {
+                    statutCout = "À surveiller";
+                } else {
+                    statutCout = "Sous contrôle";
+                }
+
+                JsonObject entry = new JsonObject();
+                entry.addProperty("date", sdf.format(date));
+                entry.addProperty("sommeReel", sommeReel.toString());
+                entry.addProperty("sommePrevu", sommePrevu.toString());
+                entry.addProperty("phase", phase);
+                entry.addProperty("statutCout", statutCout);
+
+                dataArray.add(entry);
+            }
+
+
+            jsonResponse.add("data", dataArray);
+            jsonResponse.addProperty("success", true);
+            out.print(jsonResponse.toString());
+
+        } catch (Exception e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            jsonResponse.addProperty("success", false);
+            jsonResponse.addProperty("error", "Erreur lors de la récupération des sommes : " + e.getMessage());
+            out.print(jsonResponse.toString());
+        }
+    }
+
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        // Garder ici le code existant de import des JSON (non modifié)
+        // Je te le remets juste pour que le code soit complet :
+        setCorsHeaders(response);
+        response.setContentType("application/json;charset=UTF-8");
+        PrintWriter out = response.getWriter();
+        JsonObject jsonResponse = new JsonObject();
+
+        try {
             InputStream costStream = getServletContext().getResourceAsStream("/WEB-INF/data/daily_cost_data.json");
             if (costStream == null) {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -44,7 +116,6 @@ public class ImportCoutOprServlet extends HttpServlet {
                 return;
             }
 
-            // 2. Chargement du JSON du rapport de forage pour les informations additionnelles
             InputStream reportStream = getServletContext().getResourceAsStream("/WEB-INF/data/drilling_report_data.json");
             if (reportStream == null) {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -53,12 +124,11 @@ public class ImportCoutOprServlet extends HttpServlet {
                 return;
             }
 
-            // 3. Parsing des fichiers JSON
-            JsonObject costObject = JsonParser.parseReader(new InputStreamReader(costStream, "UTF-8")).getAsJsonObject();
-            JsonObject reportObject = JsonParser.parseReader(new InputStreamReader(reportStream, "UTF-8")).getAsJsonObject();
+            com.google.gson.JsonObject costObject = com.google.gson.JsonParser.parseReader(new InputStreamReader(costStream, "UTF-8")).getAsJsonObject();
+            com.google.gson.JsonObject reportObject = com.google.gson.JsonParser.parseReader(new InputStreamReader(reportStream, "UTF-8")).getAsJsonObject();
 
-            JsonObject dailyCost = costObject.getAsJsonObject("daily_cost");
-            JsonObject header = reportObject.getAsJsonObject("header");
+            com.google.gson.JsonObject dailyCost = costObject.getAsJsonObject("daily_cost");
+            com.google.gson.JsonObject header = reportObject.getAsJsonObject("header");
 
             if (dailyCost == null) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -74,77 +144,64 @@ public class ImportCoutOprServlet extends HttpServlet {
                 return;
             }
 
-            // 4. Extraction des informations additionnelles du rapport de forage
             String wellName = header.has("well_name") ? header.get("well_name").getAsString() : null;
             String reportDateStr = header.has("report_date") ? header.get("report_date").getAsString() : null;
             String phase = header.has("last_casing") ? header.get("last_casing").getAsString() : null;
 
-            // Conversion de la date
-            Date reportDate = null;
+            java.util.Date reportDate = null;
             if (reportDateStr != null && !reportDateStr.isEmpty()) {
                 try {
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+                    java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM/dd/yyyy");
                     reportDate = dateFormat.parse(reportDateStr);
-                } catch (ParseException e) {
+                } catch (java.text.ParseException e) {
                     System.out.println("Erreur lors de la conversion de la date: " + e.getMessage());
                 }
             }
 
-            // 5. Traitement de chaque catégorie d'opération
             int createdCount = 0;
 
-            for (Map.Entry<String, JsonElement> entry : dailyCost.entrySet()) {
+            for (java.util.Map.Entry<String, com.google.gson.JsonElement> entry : dailyCost.entrySet()) {
                 String categoryName = entry.getKey();
 
-                // Ignorer la clé "daily_cost_total"
                 if ("daily_cost_total".equals(categoryName)) {
                     continue;
                 }
 
-                // Le categoryName est directement le nom de l'opération
-                System.out.println("Traitement de la catégorie: " + categoryName);
+                com.google.gson.JsonObject categoryData = entry.getValue().getAsJsonObject();
 
-                JsonObject categoryData = entry.getValue().getAsJsonObject();
-
-                // 6. Création de l'entité CoutOpr
                 CoutOpr coutOpr = new CoutOpr();
                 coutOpr.setNomOpr(categoryName);
 
-                // Ajout des informations additionnelles
                 coutOpr.setNom_puit(wellName);
                 coutOpr.setDate(reportDate);
                 coutOpr.setPhase(phase);
 
-                // Récupérer le total de la catégorie
                 if (categoryData.has("total")) {
-                    JsonElement totalElement = categoryData.get("total");
+                    com.google.gson.JsonElement totalElement = categoryData.get("total");
                     if (!totalElement.isJsonNull()) {
                         try {
-                            // Si c'est un nombre directement
                             if (totalElement.isJsonPrimitive() && totalElement.getAsJsonPrimitive().isNumber()) {
                                 coutOpr.setCoutReel(new BigDecimal(totalElement.getAsDouble()));
-                            }
-                            // Si c'est une chaîne non vide
-                            else if (totalElement.isJsonPrimitive() && !totalElement.getAsString().isEmpty()) {
+                            } else if (totalElement.isJsonPrimitive() && !totalElement.getAsString().isEmpty()) {
                                 coutOpr.setCoutReel(new BigDecimal(totalElement.getAsString()));
                             }
                         } catch (NumberFormatException e) {
                             System.out.println("Erreur de conversion pour le total de " + categoryName + ": " + e.getMessage());
-                            // Ignorer si la conversion échoue
                         }
                     }
                 }
 
-                // Les autres champs sont laissés à null comme spécifié
                 coutOpr.setCoutPrevu(null);
                 coutOpr.setStatutCout(null);
 
-                // 7. Sauvegarde
                 coutOprDAO.create(coutOpr);
                 createdCount++;
             }
 
-            // 8. Réponse JSON
+            coutOprDAO.remplirCoutsPrevusDepuisMap();
+            coutOprDAO.mettreAJourStatutCout();
+
+
             jsonResponse.addProperty("success", true);
             jsonResponse.addProperty("created_count", createdCount);
             jsonResponse.addProperty("message", "Coûts d'opérations créés avec succès. Les données du puits, la date et la phase ont été ajoutées.");
@@ -159,3 +216,5 @@ public class ImportCoutOprServlet extends HttpServlet {
         }
     }
 }
+
+

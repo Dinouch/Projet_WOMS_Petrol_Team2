@@ -1,6 +1,6 @@
 # deploy.ps1 - Version corrigée et testée
 param (
-    [string]$projectPath = "C:\Users\dinap\OneDrive\Bureau\ESI\2CS\S2\Projet 2CS\test\test_j2ee",
+    [string]$projectPath = "C:\Users\mona\Desktop\WOMS2\Projet_WOMS_Petrol_Team2",
     [string]$tomeePath = "C:\apache-tomee-webprofile-10.0.1",
     [string]$warName = "test_j2ee.war"
 )
