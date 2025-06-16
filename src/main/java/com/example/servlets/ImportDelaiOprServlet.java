@@ -2,10 +2,7 @@ package com.example.servlets;
 
 import com.example.dao.DelaiOprDAO;
 import com.example.entities.DelaiOpr;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
+import com.google.gson.*;
 import jakarta.inject.Inject;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -18,7 +15,6 @@ import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Random;
 
 @WebServlet("/importDelaiOpr")
@@ -37,115 +33,136 @@ public class ImportDelaiOprServlet extends HttpServlet {
         Random random = new Random();
 
         try {
-            // Mode génération aléatoire uniquement
+            // Mode génération aléatoire
             if ("random".equals(request.getParameter("mode"))) {
-                int count = 50; // Valeur par défaut
+                int count = 50;
                 try {
                     count = Integer.parseInt(request.getParameter("count"));
                 } catch (Exception e) {
-                    // Conserver la valeur par défaut
+                    // Valeur par défaut conservée
                 }
 
-                // Génération des données aléatoires
                 delaiOprDAO.generateTestData(count);
 
                 jsonResponse.addProperty("success", true);
                 jsonResponse.addProperty("created_count", count);
-                jsonResponse.addProperty("message", count + " enregistrements aléatoires générés avec succès");
                 out.print(jsonResponse.toString());
                 return;
             }
 
-            // Mode traitement normal du fichier JSON
+            // Mode traitement du fichier JSON
             InputStream is = getServletContext().getResourceAsStream("/WEB-INF/data/drilling_report_data.json");
             if (is == null) {
+                jsonResponse.addProperty("success", false);
+                jsonResponse.addProperty("error", "Fichier introuvable");
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                jsonResponse.addProperty("error", "Fichier JSON introuvable");
                 out.print(jsonResponse.toString());
                 return;
             }
 
-            // Parsing du fichier
-            JsonObject jsonObject = JsonParser.parseReader(new InputStreamReader(is, "UTF-8")).getAsJsonObject();
-            JsonArray operations = jsonObject.getAsJsonArray("operations");
-            JsonObject header = jsonObject.getAsJsonObject("header");
-            JsonObject remarks = jsonObject.getAsJsonObject("remarks");
+            // Parsing sécurisé du JSON
+            JsonElement rootElement = JsonParser.parseReader(new InputStreamReader(is, "UTF-8"));
 
-            if (operations == null || operations.size() == 0) {
+            if (!rootElement.isJsonObject()) {
+                jsonResponse.addProperty("success", false);
+                jsonResponse.addProperty("error", "Format JSON invalide - objet attendu");
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                jsonResponse.addProperty("error", "Aucune opération trouvée dans le fichier JSON");
                 out.print(jsonResponse.toString());
                 return;
             }
 
-            // Traitement de chaque opération
+            JsonObject rootObject = rootElement.getAsJsonObject();
+            JsonElement operationsElement = rootObject.get("operations");
+
+            // Adaptation pour la structure spéciale (double niveau)
+            if (operationsElement != null && operationsElement.isJsonObject()) {
+                JsonObject operationsWrapper = operationsElement.getAsJsonObject();
+                operationsElement = operationsWrapper.get("operations");
+            }
+
+            if (operationsElement == null || !operationsElement.isJsonArray()) {
+                jsonResponse.addProperty("success", false);
+                jsonResponse.addProperty("error", "Le champ 'operations' est absent ou n'est pas un tableau");
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                out.print(jsonResponse.toString());
+                return;
+            }
+
+            JsonArray operations = operationsElement.getAsJsonArray();
+            if (operations.size() == 0) {
+                jsonResponse.addProperty("success", false);
+                jsonResponse.addProperty("error", "Aucune opération à traiter");
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                out.print(jsonResponse.toString());
+                return;
+            }
+
+            // Traitement des opérations
             int createdCount = 0;
             SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
 
-            // Dans la méthode doPost, partie traitement des opérations
-            for (int i = 0; i < operations.size(); i++) {
-                JsonObject operation = operations.get(i).getAsJsonObject();
-
-                DelaiOpr delaiOpr = new DelaiOpr();
-
-                // Génération ALÉATOIRE OBLIGATOIRE (même si description vide)
-                Random rand = new Random();
-                delaiOpr.setDureePr(String.format("%dh%02d",
-                        1 + rand.nextInt(5),  // 1-5 heures
-                        rand.nextInt(60)));   // 0-59 minutes
-
-                // Si opération valide
-                if (!operation.get("description").getAsString().isEmpty()) {
-                    delaiOpr.setDespOpr(operation.get("description").getAsString());
-
-                    // Traitement des heures si disponibles
-                    try {
-                        if (!operation.get("start_time").getAsString().isEmpty()) {
-                            delaiOpr.setStartTime(new Time(timeFormat.parse(
-                                    operation.get("start_time").getAsString()).getTime()));
-                        }
-                        if (!operation.get("end_time").getAsString().isEmpty()) {
-                            delaiOpr.setEndTime(new Time(timeFormat.parse(
-                                    operation.get("end_time").getAsString()).getTime()));
-                        }
-                    } catch (ParseException e) {
-                        System.err.println("Erreur parsing time: " + e.getMessage());
-                    }
-                }
-
-
-
-                try {
-                    if (!operation.get("start_time").getAsString().isEmpty()) {
-                        delaiOpr.setStartTime(new Time(timeFormat.parse(operation.get("start_time").getAsString()).getTime()));
-                    }
-                    if (!operation.get("end_time").getAsString().isEmpty()) {
-                        delaiOpr.setEndTime(new Time(timeFormat.parse(operation.get("end_time").getAsString()).getTime()));
-                    }
-                } catch (ParseException e) {
-                    // Ignorer les erreurs de parsing de temps
+            for (JsonElement element : operations) {
+                if (!element.isJsonObject()) {
                     continue;
                 }
 
-                delaiOpr.setStatutDelai(null); // Valeur null comme spécifié
-                // Les autres champs sont laissés à null comme spécifié
-                delaiOpr.setDureepr(null);
+                JsonObject operation = element.getAsJsonObject();
+                DelaiOpr delaiOpr = new DelaiOpr();
 
-                // 5. Sauvegarde
-                // Sauvegarde SYSTEMATIQUE
-                delaiOprDAO.create(delaiOpr);
-                createdCount++;
+                // Traitement des champs avec vérifications
+                if (operation.has("description") && !operation.get("description").isJsonNull()) {
+                    delaiOpr.setDespOpr(operation.get("description").getAsString());
+                }
+
+                // Durée aléatoire si nécessaire
+                delaiOpr.setDureePr(String.format("%dh%02d",
+                        1 + random.nextInt(5), random.nextInt(60)));
+
+                // Traitement des heures
+                try {
+                    if (operation.has("start_time") && !operation.get("start_time").isJsonNull()) {
+                        String startTime = operation.get("start_time").getAsString();
+                        if (!startTime.isEmpty()) {
+                            Date startDate = timeFormat.parse(startTime);
+                            delaiOpr.setStartTime(new Time(startDate.getTime()));
+                        }
+                    }
+
+                    if (operation.has("end_time") && !operation.get("end_time").isJsonNull()) {
+                        String endTime = operation.get("end_time").getAsString();
+                        if (!endTime.isEmpty()) {
+                            Date endDate = timeFormat.parse(endTime);
+                            delaiOpr.setEndTime(new Time(endDate.getTime()));
+                        }
+                    }
+                } catch (ParseException e) {
+                    System.err.println("Erreur de parsing du temps: " + e.getMessage());
+                    continue;
+                }
+
+                delaiOpr.setStatutDelai(null);
+
+                try {
+                    delaiOprDAO.create(delaiOpr);
+                    createdCount++;
+                } catch (Exception e) {
+                    System.err.println("Erreur lors de la création: " + e.getMessage());
+                }
             }
 
             jsonResponse.addProperty("success", true);
             jsonResponse.addProperty("created_count", createdCount);
-            jsonResponse.addProperty("message", "Délais d'opérations créés avec succès");
             out.print(jsonResponse.toString());
 
-        } catch (Exception e) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        } catch (JsonSyntaxException e) {
             jsonResponse.addProperty("success", false);
-            jsonResponse.addProperty("error", "Erreur inattendue : " + e.getMessage());
+            jsonResponse.addProperty("error", "Erreur de syntaxe JSON: " + e.getMessage());
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            out.print(jsonResponse.toString());
+        } catch (Exception e) {
+            jsonResponse.addProperty("success", false);
+            jsonResponse.addProperty("error", "Erreur inattendue: " + e.getMessage());
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             out.print(jsonResponse.toString());
             e.printStackTrace();
         }
@@ -154,8 +171,6 @@ public class ImportDelaiOprServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Permet de générer des données aléatoires via une requête GET
         doPost(request, response);
     }
 }
-

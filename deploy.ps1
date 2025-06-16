@@ -1,10 +1,9 @@
-# deploy.ps1 - Version corrigée et testée
+# deploy.ps1 - Version corrigée et testéeAdd commentMore actions
 param (
-    [string]$projectPath = "C:\Users\mona\Desktop\WOMS2\Projet_WOMS_Petrol_Team2",
+    [string]$projectPath = "C:\Users\dinap\OneDrive\Bureau\ESI\2CS\S2\Projet 2CS\test\test_j2ee",
     [string]$tomeePath = "C:\apache-tomee-webprofile-10.0.1",
     [string]$warName = "test_j2ee.war"
 )
-
 
 Write-Host "=== DÉPLOIEMENT AUTOMATIQUE TOMEE ===" -ForegroundColor Yellow
 Write-Host "Projet : $projectPath" -ForegroundColor Cyan

@@ -206,14 +206,10 @@ public class DelaiOpr {
     public void setNom_puit(String nom_puit) {
         this.nom_puit = nom_puit;
     }
-<<<<<<< HEAD
 
     public void setDureepr(String dureepr) {
-        this.dureepr = dureepr;
+        this.dureePr = dureepr;
     }
-    public String getDureepr() { return dureepr;     }
+    public String getDureepr() { return dureePr;    }
 
 }
-=======
-}
->>>>>>> origin/cerinebackfinal
